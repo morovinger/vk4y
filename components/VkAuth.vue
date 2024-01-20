@@ -1,12 +1,18 @@
 <template>
   <div>
-    <v-btn @click="authenticateWithVK">Login with VKontakte</v-btn>
+    <v-btn @click="authenticateWithVK">
+      Login with VKontakte
+    </v-btn>
   </div>
 </template>
 
 <script>
 export default {
   name: 'VkAuth',
+
+  mounted() {
+    this.handleRedirect();
+  },
 
   methods: {
     authenticateWithVK() {
@@ -35,10 +41,6 @@ export default {
         }
       }
     }
-  },
-
-  mounted() {
-    this.handleRedirect();
   }
 };
 </script>

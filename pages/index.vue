@@ -27,24 +27,32 @@ export default {
 </script>
 
 <template>
-
-  <v-form fast-fail=true @submit.prevent>
-    <v-spacer></v-spacer>
-    <v-row>
-      <v-col cols="10">
-        <v-text-field
+  <div>
+    <v-form
+      fast-fail="true"
+      @submit.prevent
+    >
+      <v-spacer />
+      <v-row>
+        <v-col cols="10">
+          <v-text-field
             v-model="url"
             :rules="urlRules"
             label="URL"
             required
-        ></v-text-field>
-      </v-col>
-      <v-col cols="2">
-        <v-btn type="submit" @click="clear">clear</v-btn>
-      </v-col>
-    </v-row>
-  </v-form>
+          />
+        </v-col>
+        <v-col cols="2">
+          <v-btn
+            type="submit"
+            @click="clear"
+          >
+            clear
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-form>
 
-  <vk-auth></vk-auth>
-
+    <vk-auth />
+  </div>
 </template>

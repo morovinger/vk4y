@@ -9,16 +9,13 @@ const image = "https://vuetify3nuxt3starter.behonbaker.com/starter.png";
 const url = "https://vuetify3nuxt3starter.behonbaker.com/";
 
 export default defineNuxtConfig({
-  //ssr: false
+  ssr: false,
   devtools: {
     enabled: false
   },
   modules: [
     'vuetify-nuxt-module',
     '@nuxtjs/eslint-module',
-  ],
-  plugins: [
-    '~/plugins/vk-id.ts'
   ],
   vuetify: {
     moduleOptions: {

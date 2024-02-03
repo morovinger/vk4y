@@ -15,10 +15,10 @@
     "@nuxt/eslint-config": "^0.2.0",
     "@nuxtjs/eslint-module": "^4.1.0",
     "eslint": "^8.56.0",
-    "nuxt": "^3.9.3",
-    "vue": "^3.4.14",
+    "nuxt": "^3.10.0",
+    "vue": "^3.4.15",
     "vue-router": "^4.2.5",
-    "vuetify-nuxt-module": "^0.10.2"
+    "vuetify-nuxt-module": "^0.10.3"
   },
   "dependencies": {
     "@vueuse/nuxt": "^10.7.2"

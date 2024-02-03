@@ -7,40 +7,46 @@
 </template>
 
 <script>
+import {useGlobalUserState} from '~/composables/useGlobalState';
+
 export default {
   name: 'VkAuth',
 
-  mounted() {
-    this.handleRedirect();
-  },
+  setup() {
+    const globalState = useGlobalUserState();
 
-  methods: {
-    authenticateWithVK() {
+    const authenticateWithVK = () => {
       const clientId = '51832372'; // Replace with your client ID
-      const redirectUri = encodeURIComponent('https://5dde-109-229-89-229.ngrok-free.app/'); // Replace with your redirect URI
+      const redirectUri = encodeURIComponent('https://ba71-109-229-89-229.ngrok-free.app'); // Replace with your redirect URI
       const scope = 'photos'; // Define your required scopes
       const responseType = 'token';
       const version = '5.131'; // API version
       const state = '123456'; // A unique string to be returned after auth
 
       window.location.href = `https://oauth.vk.com/authorize?client_id=${clientId}&display=page&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}&v=${version}&state=${state}`;
-    },
+    };
 
-    handleRedirect() {
+    const handleRedirect = () => {
       if (window.location.hash) {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
-        const accessToken = params.get('access_token');
-        const expiresIn = params.get('expires_in');
-        const userId = params.get('user_id');
+        globalState.accessToken = params.get('access_token');
+        // Assuming the user's name is also returned in the URL parameters
+        globalState.userName = params.get('user_id');
+        globalState.expiresIn = params.get('expires_in');
 
-        if (accessToken) {
-          // Handle the access token (store it, etc.)
-          console.log('Access Token:', accessToken);
-          // Additional handling here
+        if (globalState.accessToken) {
+          console.log('Access Token:', globalState.accessToken);
+          console.log('User Name:', globalState.userName);
         }
       }
-    }
+    };
+
+    return {authenticateWithVK, handleRedirect};
+  },
+
+  mounted() {
+    this.handleRedirect();
   }
 };
 </script>

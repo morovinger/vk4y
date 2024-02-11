@@ -21,6 +21,8 @@
     "vuetify-nuxt-module": "^0.10.3"
   },
   "dependencies": {
+    "@types/vk-openapi": "^1.6.5",
+    "@vueuse/integrations": "^10.7.2",
     "@vueuse/nuxt": "^10.7.2"
   }
 }

@@ -5,12 +5,13 @@ import {useGlobalToken} from "~/composables/useGlobalToken";
 
 const url = ref('')
 const token = useGlobalToken()
-console.log(token)
+const results = ref('')
+
 const urlRules = [
   v => !!v || 'URL is required',
   v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || 'Must be valid URL',
   v => v.includes('vk.com') || 'Must be VK.com URL',
-  v => v.includes('album') || 'Must contain `album` in URL',
+  v => v.includes('album') || 'Must contain `album` or `albums` in URL',
 ];
 
 const isValid = computed(() => {
@@ -18,7 +19,46 @@ const isValid = computed(() => {
 });
 
 function check(){
+  const parsedUrl = new URL(url.value);
+  return url.value.includes('albums') ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl)
+}
 
+function getUserAlbums(parsedUrl: URL) {
+  const pathname = parsedUrl.pathname
+  const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/) : pathname.match(/\d+/);
+
+  VK.Api.call('photos.getAlbums', {
+    owner_id: owner_id,
+    need_system: 1,
+    v: '5.194'
+  }, function(response: any) {
+    if (response.response) {
+      console.log(response.response);
+      results.value = response.response.count ? 'We found ' + response.response.count + ' albums' : 'Can`t find any albums by this URL'
+    } else {
+      console.error(response);
+      results.value = 'Error fetching albums'
+    }
+  });
+}
+
+function getUserPhotos(parsedUrl: URL){
+  const pathname = parsedUrl.pathname
+  const album_id = pathname.split('_')[1];
+
+  VK.Api.call('photos.get', {
+    album_id: album_id,
+    need_system: 1,
+    v: '5.194'
+  }, function(response: any) {
+    if (response.response) {
+      console.log(response.response);
+      results.value = response.response.count ? 'We found ' + response.response.count + ' photos' : 'Can`t find any photos by this URL'
+    } else {
+      console.error(response);
+      results.value = 'Error fetching albums'
+    }
+  });
 }
 
 function clear(){
@@ -64,9 +104,18 @@ function clear(){
           </v-col>
         </v-row>
       </v-form>
+      <div class="flex results">
+        <h2>
+          {{ results }}
+        </h2>
+      </div>
     </div>
-    <div v-else>
-      <vk-auth />
-    </div>
+    <vk-auth />
   </div>
 </template>
+
+<style lang="less">
+  .results{
+    justify-content: start;
+  }
+</style>

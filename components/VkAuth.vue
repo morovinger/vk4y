@@ -5,17 +5,15 @@ import {useGlobalToken} from "~/composables/useGlobalToken";
 import {useGlobalId} from "~/composables/useGlobalID";
 
 const apiId = useGlobalId()
-const userName = ref('')
 const permissions = 4|2
-const token = useGlobalToken()
+const token = ref(useGlobalToken())
 
 // VK Login function
 const login = () => {
-  VK.Auth.login((response) => {
+  VK.Auth.login((response: { session: { user: { first_name: string; }; }; }) => {
     if (response.session) {
       console.log('User successfully logged in', response)
-      userName.value = response.session.user.first_name
-      token.value = response.session.sid
+      location.reload()
     } else {
       console.log('User failed to login or denied access', response)
     }
@@ -24,8 +22,6 @@ const login = () => {
 
 const logout = () => {
   VK.Auth.logout(() => {
-    userName.value = ''
-    token.value = 0
   });
 };
 
@@ -38,12 +34,12 @@ onMounted( () => {
 </script>
 
 <template>
-  <div>
+  <div class="flex auth">
     <div
       v-if="token"
-      class="login"
+      class="logout"
     >
-      <p>Logged in as: {{ userName }}</p>
+      <p>You are logged in Vk.com</p>
       <v-btn
         color="primary"
         @click="logout"
@@ -51,9 +47,10 @@ onMounted( () => {
         Logout
       </v-btn>
     </div>
+
     <div
       v-else
-      class="logout"
+      class="login"
     >
       <v-btn @click="login">
         Login to VK
@@ -61,3 +58,10 @@ onMounted( () => {
     </div>
   </div>
 </template>
+
+<style lang="less">
+.auth{
+  justify-content: end;
+  margin-top: 50px;
+}
+</style>

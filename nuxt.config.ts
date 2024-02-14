@@ -1,10 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-// PWA Config
-
-
-const title = "Vuetify 3 + Nuxt 3 Starter";
-const description = "Template to get you up and running with Nuxt 3 & Vuetify 3";
+const title = "Vk.com album downloader";
+const description = "Download you favorite photos form Vk.com for free";
 const image = "https://vuetify3nuxt3starter.behonbaker.com/starter.png";
 const url = "https://vuetify3nuxt3starter.behonbaker.com/";
 
@@ -16,6 +13,10 @@ export default defineNuxtConfig({
   modules: [
     'vuetify-nuxt-module',
     '@nuxtjs/eslint-module',
+    '@nuxtjs/i18n',
+  ],
+  css: [
+    "~/assets/style.less",
   ],
   vuetify: {
     moduleOptions: {
@@ -39,8 +40,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: "Vuetify 3 + Nuxt 3 Starter",
-      titleTemplate: "%s | Vuetify 3 + Nuxt 3 Starter",
+      title: "Vk.com album downloader|vk4y",
       link: [
         { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
         { rel: "canonical", href: url },

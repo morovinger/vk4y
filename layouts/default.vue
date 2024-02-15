@@ -1,7 +1,7 @@
 
 <script setup>
-  const routes = useRouter().getRoutes()
   const drawer = ref(false)
+  const localePath = useLocalePath()
 </script>
 
 <template>
@@ -12,15 +12,19 @@
       app
     >
       <v-list>
-        <v-list-item
-          v-for="link in routes"
-          :key="link.name"
-        >
+        <v-list-item>
           <v-list-subheader>
             Vk4you
           </v-list-subheader>
-          <v-btn :to="link">
-            {{ link.name }}
+          <v-btn>
+            <NuxtLink :to="localePath('index')">
+              {{ $t('home') }}
+            </NuxtLink>
+          </v-btn>
+          <v-btn>
+            <NuxtLink :to="localePath('index')">
+              {{ $t('about') }}
+            </NuxtLink>
           </v-btn>
         </v-list-item>
       </v-list>
@@ -34,16 +38,18 @@
         >
           <v-app-bar-title>Vk4you</v-app-bar-title>
           <v-col
-            v-for="link in routes"
-            :key="link.name"
             class="hidden-sm-and-down text-center"
-            cols="2"
+            cols="4"
           >
-            <v-btn
-              :to="link"
-              color="red"
-            >
-              {{ link.name }}
+            <v-btn>
+              <NuxtLink :to="localePath('index')">
+                {{ $t('home') }}
+              </NuxtLink>
+            </v-btn>
+            <v-btn>
+              <NuxtLink :to="localePath('about')">
+                {{ $t('about') }}
+              </NuxtLink>
             </v-btn>
           </v-col>
           <v-app-bar-nav-icon
@@ -51,6 +57,7 @@
             color="red"
             @click.stop="drawer = !drawer"
           />
+          <v-col />
         </v-row>
       </v-container>
     </v-app-bar>

@@ -24,7 +24,6 @@ function parseCookie(queryString: string) {
     return result;
 }
 
-console.log(cookie)
 export const useGlobalToken = createGlobalState(
     () => {
         return cookie.value ? parseCookie(cookie.value) : ''

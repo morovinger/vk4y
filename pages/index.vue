@@ -6,6 +6,7 @@ import {useGlobalToken} from "~/composables/useGlobalToken";
 const url = ref('')
 const token = useGlobalToken()
 const results = ref('')
+const { t } = useI18n();
 
 const urlRules = [
   v => !!v || 'URL is required',
@@ -34,10 +35,10 @@ function getUserAlbums(parsedUrl: URL) {
   }, function(response: any) {
     if (response.response) {
       console.log(response.response);
-      results.value = response.response.count ? 'We found ' + response.response.count + ' albums' : 'Can`t find any albums by this URL'
+      results.value = response.response.count ? `${t('found')} ${response.response.count} ${t('albums')}` : t('error_find')
     } else {
       console.error(response);
-      results.value = 'Error fetching albums'
+      results.value = t('error_fetching')
     }
   });
 }
@@ -53,10 +54,10 @@ function getUserPhotos(parsedUrl: URL){
   }, function(response: any) {
     if (response.response) {
       console.log(response.response);
-      results.value = response.response.count ? 'We found ' + response.response.count + ' photos' : 'Can`t find any photos by this URL'
+      results.value = response.response.count ? `${t('found')} ${response.response.count} ${t('photos')}` : t('error_find')
     } else {
       console.error(response);
-      results.value = 'Error fetching albums'
+      results.value = t('error_fetching')
     }
   });
 }

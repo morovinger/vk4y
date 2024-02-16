@@ -39,12 +39,12 @@ onMounted( () => {
       v-if="token"
       class="logout"
     >
-      <p>You are logged in Vk.com</p>
+      <p>{{ $t('logged') }}</p>
       <v-btn
         color="primary"
         @click="logout"
       >
-        Logout
+        {{ $t('logout') }}
       </v-btn>
     </div>
 
@@ -53,7 +53,7 @@ onMounted( () => {
       class="login"
     >
       <v-btn @click="login">
-        Login to VK
+        {{ $t('login') }}
       </v-btn>
     </div>
   </div>

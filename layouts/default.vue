@@ -2,6 +2,8 @@
 <script setup>
   const drawer = ref(false)
   const localePath = useLocalePath()
+  const switchLocalePath = useSwitchLocalePath()
+  const { locale } = useI18n()
 </script>
 
 <template>
@@ -12,15 +14,17 @@
       app
     >
       <v-list>
+        <v-list-subheader>
+          Vk4you
+        </v-list-subheader>
         <v-list-item>
-          <v-list-subheader>
-            Vk4you
-          </v-list-subheader>
           <v-btn>
             <NuxtLink :to="localePath('index')">
               {{ $t('home') }}
             </NuxtLink>
           </v-btn>
+        </v-list-item>
+        <v-list-item>
           <v-btn>
             <NuxtLink :to="localePath('index')">
               {{ $t('about') }}
@@ -49,6 +53,18 @@
             <v-btn>
               <NuxtLink :to="localePath('about')">
                 {{ $t('about') }}
+              </NuxtLink>
+            </v-btn>
+          </v-col>
+          <v-col>
+            <v-btn v-if="locale === 'ru'">
+              <NuxtLink :to="switchLocalePath('en')">
+                EN
+              </NuxtLink>
+            </v-btn>
+            <v-btn v-else>
+              <NuxtLink :to="switchLocalePath('ru')">
+                RU
               </NuxtLink>
             </v-btn>
           </v-col>

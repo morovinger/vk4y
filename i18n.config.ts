@@ -16,7 +16,8 @@ export default defineI18nConfig(() => ({
             error_fetching: 'Error fetching albums',
             error_login: 'Error logging in',
             download_by_photos: 'Download all photos',
-            download_by_album: 'Download all albums -- soon'
+            download_by_album: 'Download all albums -- soon',
+            done:'All done',
         },
         ru: {
             welcome: 'Привет',
@@ -32,7 +33,8 @@ export default defineI18nConfig(() => ({
             error_fetching: 'Невозможно получить',
             error_login: 'Ошибка логина',
             download_by_photos: 'Скачать все фото',
-            download_by_album: 'Скачать все альбомы -- Скоро'
+            download_by_album: 'Скачать все альбомы -- Скоро',
+            done:'Все скачено',
         }
     }
 }))

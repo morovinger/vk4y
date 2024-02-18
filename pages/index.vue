@@ -11,6 +11,7 @@ let images = []
 const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
+const loading = ref(false)
 
 const urlRules = [
   v => !!v || 'URL is required',
@@ -27,6 +28,10 @@ const isValid = computed(() => {
 function downloadImages(){
   images = extractLargestImages(results)
   console.log(images)
+  loading.value = true;
+  saveFiles(images)
+  loading.value = false;
+  download_as.value = ''
 }
 
 function check() {
@@ -41,7 +46,7 @@ function check() {
   const isAlbums = url.value.includes('albums');
   const promise = isAlbums ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl);
 
-  promise.then(result => {
+  promise.then((result: string | any[]) => {
     if (result && result.length > 0) {
       message.value = `${t('found')} ${result.length} ${isAlbums ? t('albums') : t('photos')}`;
       results = result;
@@ -116,7 +121,7 @@ function getUserPhotos(parsedUrl:URL) {
   }
 
   // Recursive function to fetch all photos
-  function fetchAllPhotos() {
+  function fetchAllPhotos():any {
     return fetchPhotos().then(items => {
       if (items.length === count) {
         offset += count;
@@ -138,7 +143,7 @@ function getUserPhotos(parsedUrl:URL) {
       });
 }
 
-function extractLargestImages(images) {
+function extractLargestImages(images: any[]) {
   return images.map(entry => {
     if (entry.sizes && entry.sizes.length > 0) {
       const largestImage = entry.sizes.reduce((prev, current) => {
@@ -150,7 +155,24 @@ function extractLargestImages(images) {
   }).filter(url => url != null);
 }
 
+async function saveFiles(images: any[]) {
+  try {
+    // Request the user to select a directory
+    const dirHandle = await window.showDirectoryPicker();
 
+    for (const [index, url] of images.entries()) {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const fileHandle = await dirHandle.getFileHandle(`image${index}.png`, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+    }
+    message.value = t('done')
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 function clear(){
   url.value = ''
@@ -202,6 +224,11 @@ function clear(){
           </h2>
         </v-col>
         <v-col>
+          <v-progress-circular
+            v-if="loading"
+            indeterminate
+            color="primary"
+          />
           <v-btn
             v-if="download_as === 'photos'"
             @click="downloadImages"

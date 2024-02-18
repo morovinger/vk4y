@@ -1,5 +1,5 @@
 import {createGlobalState} from "@vueuse/core";
 
 export const useGlobalId = createGlobalState(
-    () => ref(6656971),
+    () => ref(51832372),
 )

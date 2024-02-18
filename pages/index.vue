@@ -24,82 +24,121 @@ const isValid = computed(() => {
   return urlRules.every(rule => rule(url.value) === true);
 });
 
-function check(){
-  const parsedUrl = new URL(url.value)
-  download_as.value = url.value.includes('albums') ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl)
-}
-
 function downloadImages(){
-  console.log(results)
   images = extractLargestImages(results)
   console.log(images)
 }
 
-function getUserAlbums(parsedUrl: URL) {
-  const pathname = parsedUrl.pathname
-  const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/) : pathname.match(/\d+/);
+function check() {
+  // Check if url or url.value is null or undefined
+  if (!url || !url.value) {
+    console.error("URL is null or undefined");
+    setError(t('error_invalid_url'));
+    return;
+  }
 
-  VK.Api.call('photos.getAlbums', {
-    owner_id: owner_id,
-    need_system: 1,
-    v: '5.194'
-  }, function(response: any) {
-    if (response.response) {
-      console.log(response.response)
-      message.value = response.response.count ? `${t('found')} ${response.response.count} ${t('albums')}` : t('error_find')
-      results = response.response.count ?? response.response
+  const parsedUrl = new URL(url.value);
+  const isAlbums = url.value.includes('albums');
+  const promise = isAlbums ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl);
+
+  promise.then(result => {
+    if (result && result.length > 0) {
+      message.value = `${t('found')} ${result.length} ${isAlbums ? t('albums') : t('photos')}`;
+      results = result;
+      download_as.value = isAlbums ? 'albums' : 'photos'
     } else {
-      console.error(response);
-      setError(t('error_fetching'))
+      message.value = t('no_results_found');
+      results = [];
+      download_as.value = '';
     }
+  }).catch((error: any) => {
+    console.error(error);
+    setError(t('error_fetching'));
+    results = [];
+    download_as.value = '';
   });
-  return 'albums'
 }
 
-function getUserPhotos(parsedUrl: URL) {
-  const pathname = parsedUrl.pathname;
-  const album_id = pathname.split('_')[1];
-  let allPhotos: any[] = [];
-  let offset = 0;
-  const count = 1000; // Maximum number of photos to fetch per request (adjust as needed)
+function getUserAlbums(parsedUrl:URL) {
+  return new Promise((resolve, reject) => {
+    const pathname = parsedUrl.pathname;
+    const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
 
-  function fetchPhotos() {
-    const code = `return API.photos.get({
-      "album_id": ${album_id},
-      "count": ${count},
-      "offset": ${offset},
-      "need_system": 1,
-      "v": "5.194"
-    });`;
-
-    VK.Api.call('execute', {
-      code: code,
-      "v": "5.194"
-    }, function(response: any) {
+    VK.Api.call('photos.getAlbums', {
+      owner_id: owner_id,
+      need_system: 1,
+      v: '5.194'
+    }, function(response) {
       if (response.response) {
-        allPhotos = allPhotos.concat(response.response.items);
-
-        if (response.response.items.length === count) {
-          offset += count;
-          fetchPhotos(); // Fetch the next batch
-        } else {
-          console.log('All photos fetched', allPhotos)
-          message.value = allPhotos.length ? `${t('found')} ${allPhotos.length} ${t('photos')}` : t('error_find')
-          results = allPhotos
-        }
+        console.log(response.response);
+        resolve(response.response.items); // Resolve with the albums data
       } else {
-        console.error(response)
-        setError(t('error_fetching'))
+        console.error(response);
+        reject(new Error('Error fetching albums'));
       }
+    });
+  });
+}
+
+function getUserPhotos(parsedUrl:URL) {
+  const pathname = parsedUrl.pathname;
+  const path = pathname.split('_');
+  const album_id = path[1];
+
+  // Determine owner_id based on URL format
+  const owner_id = path[0].includes('-') ? '-' + path[0].split('-')[1] : path[0].match(/\d+/)[0];
+
+  // Constants for API requests
+  const count = 1000;
+  let offset = 0;
+  const version = "5.194";
+
+  // Function to fetch photos using VK API
+  function fetchPhotos() {
+    return new Promise((resolve, reject) => {
+      const code = `return API.photos.get({
+        "album_id": ${album_id},
+        "owner_id": ${owner_id},
+        "count": ${count},
+        "offset": ${offset},
+        "need_system": 1,
+        "v": "${version}"
+      });`;
+
+      VK.Api.call('execute', { code, "v": version }, function(response) {
+        if (response.response) {
+          resolve(response.response.items);
+        } else {
+          reject(new Error('Error fetching photos'));
+        }
+      });
     });
   }
 
-  fetchPhotos();
-  return 'photos'
+  // Recursive function to fetch all photos
+  function fetchAllPhotos() {
+    return fetchPhotos().then(items => {
+      if (items.length === count) {
+        offset += count;
+        return fetchAllPhotos().then(moreItems => items.concat(moreItems));
+      }
+      return items;
+    });
+  }
+
+  // Start fetching photos and return the promise
+  return fetchAllPhotos()
+      .then(allPhotos => {
+        console.log('All photos fetched', allPhotos);
+        return allPhotos.length ? allPhotos : false;
+      })
+      .catch(error => {
+        console.error(error);
+        return false;
+      });
 }
 
-function extractLargestImages(images: any[]) {
-  console.log(images)
+function extractLargestImages(images) {
   return images.map(entry => {
     if (entry.sizes && entry.sizes.length > 0) {
       const largestImage = entry.sizes.reduce((prev, current) => {
@@ -110,6 +149,8 @@ function extractLargestImages(images: any[]) {
     return null;
   }).filter(url => url != null);
 }
+
+
 
 function clear(){
   url.value = ''

@@ -5,7 +5,7 @@ import {useGlobalToken} from "~/composables/useGlobalToken";
 import {useGlobalId} from "~/composables/useGlobalID";
 
 const apiId = useGlobalId()
-const permissions = 4|2
+const permissions = 2|18
 const token = ref(useGlobalToken())
 const { setError } = useGlobalError()
 const { t } = useI18n()

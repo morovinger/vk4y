@@ -7,6 +7,8 @@ import {useGlobalId} from "~/composables/useGlobalID";
 const apiId = useGlobalId()
 const permissions = 4|2
 const token = ref(useGlobalToken())
+const { setError } = useGlobalError()
+const { t } = useI18n()
 
 // VK Login function
 const login = () => {
@@ -16,6 +18,7 @@ const login = () => {
       location.reload()
     } else {
       console.log('User failed to login or denied access', response)
+      setError(t('error_login'))
     }
   }, permissions);
 };

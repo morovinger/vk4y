@@ -78,6 +78,8 @@
       </v-container>
     </v-app-bar>
 
+    <error />
+
     <v-main>
       <!-- Main content goes here -->
       <v-container>

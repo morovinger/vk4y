@@ -1,4 +1,4 @@
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
     if (process.client) {
         const script = document.createElement('script');
         script.src = 'https://vk.com/js/api/openapi.js';

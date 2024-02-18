@@ -5,14 +5,19 @@ import {useGlobalToken} from "~/composables/useGlobalToken";
 
 const url = ref('')
 const token = useGlobalToken()
-const results = ref('')
-const { t } = useI18n();
+let results = {}
+const { t } = useI18n()
+let images = []
+const download_as = ref('')
+const { setError } = useGlobalError()
+const message = ref('')
 
 const urlRules = [
   v => !!v || 'URL is required',
   v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || 'Must be valid URL',
   v => v.includes('vk.com') || 'Must be VK.com URL',
   v => v.includes('album') || 'Must contain `album` or `albums` in URL',
+  v => v.includes('https://') || 'Must start with `https://',
 ];
 
 const isValid = computed(() => {
@@ -20,8 +25,14 @@ const isValid = computed(() => {
 });
 
 function check(){
-  const parsedUrl = new URL(url.value);
-  return url.value.includes('albums') ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl)
+  const parsedUrl = new URL(url.value)
+  download_as.value = url.value.includes('albums') ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl)
+}
+
+function downloadImages(){
+  console.log(results)
+  images = extractLargestImages(results)
+  console.log(images)
 }
 
 function getUserAlbums(parsedUrl: URL) {
@@ -34,32 +45,70 @@ function getUserAlbums(parsedUrl: URL) {
     v: '5.194'
   }, function(response: any) {
     if (response.response) {
-      console.log(response.response);
-      results.value = response.response.count ? `${t('found')} ${response.response.count} ${t('albums')}` : t('error_find')
+      console.log(response.response)
+      message.value = response.response.count ? `${t('found')} ${response.response.count} ${t('albums')}` : t('error_find')
+      results = response.response.count ?? response.response
     } else {
       console.error(response);
-      results.value = t('error_fetching')
+      setError(t('error_fetching'))
     }
   });
+  return 'albums'
 }
 
-function getUserPhotos(parsedUrl: URL){
-  const pathname = parsedUrl.pathname
+function getUserPhotos(parsedUrl: URL) {
+  const pathname = parsedUrl.pathname;
   const album_id = pathname.split('_')[1];
+  let allPhotos: any[] = [];
+  let offset = 0;
+  const count = 1000; // Maximum number of photos to fetch per request (adjust as needed)
 
-  VK.Api.call('photos.get', {
-    album_id: album_id,
-    need_system: 1,
-    v: '5.194'
-  }, function(response: any) {
-    if (response.response) {
-      console.log(response.response);
-      results.value = response.response.count ? `${t('found')} ${response.response.count} ${t('photos')}` : t('error_find')
-    } else {
-      console.error(response);
-      results.value = t('error_fetching')
+  function fetchPhotos() {
+    const code = `return API.photos.get({
+      "album_id": ${album_id},
+      "count": ${count},
+      "offset": ${offset},
+      "need_system": 1,
+      "v": "5.194"
+    });`;
+
+    VK.Api.call('execute', {
+      code: code,
+      "v": "5.194"
+    }, function(response: any) {
+      if (response.response) {
+        allPhotos = allPhotos.concat(response.response.items);
+
+        if (response.response.items.length === count) {
+          offset += count;
+          fetchPhotos(); // Fetch the next batch
+        } else {
+          console.log('All photos fetched', allPhotos)
+          message.value = allPhotos.length ? `${t('found')} ${allPhotos.length} ${t('photos')}` : t('error_find')
+          results = allPhotos
+        }
+      } else {
+        console.error(response)
+        setError(t('error_fetching'))
+      }
+    });
+  }
+
+  fetchPhotos();
+  return 'photos'
+}
+
+function extractLargestImages(images: any[]) {
+  console.log(images)
+  return images.map(entry => {
+    if (entry.sizes && entry.sizes.length > 0) {
+      const largestImage = entry.sizes.reduce((prev, current) => {
+        return (prev.width * prev.height > current.width * current.height) ? prev : current;
+      });
+      return largestImage.url;
     }
-  });
+    return null;
+  }).filter(url => url != null);
 }
 
 function clear(){
@@ -105,11 +154,27 @@ function clear(){
           </v-col>
         </v-row>
       </v-form>
-      <div class="flex results">
-        <h2>
-          {{ results }}
-        </h2>
-      </div>
+      <v-row>
+        <v-col>
+          <h2>
+            {{ message }}
+          </h2>
+        </v-col>
+        <v-col>
+          <v-btn
+            v-if="download_as === 'photos'"
+            @click="downloadImages"
+          >
+            {{ $t('download_by_photos') }}
+          </v-btn>
+          <v-btn
+            v-if="download_as === 'albums'"
+            :disabled="true"
+          >
+            {{ $t('download_by_album') }}
+          </v-btn>
+        </v-col>
+      </v-row>
     </div>
     <vk-auth />
   </div>

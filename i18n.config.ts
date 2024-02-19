@@ -3,6 +3,8 @@ export default defineI18nConfig(() => ({
     locale: 'en',
     messages: {
         en: {
+            title: "Vk.com album downloader",
+            description: "Download you favorite photos form Vk.com for free",
             welcome: 'Welcome',
             home: "Main page",
             about: "About",
@@ -20,6 +22,8 @@ export default defineI18nConfig(() => ({
             done:'All done',
         },
         ru: {
+            title: "скачать альбомы с Vk.com",
+            description: "Скачайте ваши альбомы с Vk.com бесплатно",
             welcome: 'Привет',
             home: "Главная",
             about: "О нас",

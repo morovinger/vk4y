@@ -2,8 +2,8 @@
 
 const title = "Vk.com album downloader";
 const description = "Download you favorite photos form Vk.com for free";
-const image = "https://vuetify3nuxt3starter.behonbaker.com/starter.png";
-const url = "https://vuetify3nuxt3starter.behonbaker.com/";
+const image = "https://vk.com/images/icons/pwa/apple/default.png?15";
+const url = "https://vk4y.github.io";
 
 export default defineNuxtConfig({
   ssr: false,
@@ -44,6 +44,8 @@ export default defineNuxtConfig({
     },
   },
   app: {
+    baseURL: '/vk4y/', // baseURL: '/<repository>/'
+    buildAssetsDir: 'assets', // don't use "_" at the begining
     head: {
       title: "Vk.com album downloader|vk4y",
       link: [

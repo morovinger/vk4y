@@ -15,10 +15,10 @@ const loading = ref(false)
 
 const urlRules = [
   v => !!v || 'URL is required',
-  v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || 'Must be valid URL',
-  v => v.includes('vk.com') || 'Must be VK.com URL',
-  v => v.includes('album') || 'Must contain `album` or `albums` in URL',
-  v => v.includes('https://') || 'Must start with `https://',
+  v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
+  v => v.includes('vk.com') || t('url_not_vk'),
+  v => v.includes('album') || t('url_not_album'),
+  v => v.includes('https://') || t('url_not_https'),
 ];
 
 const isValid = computed(() => {
@@ -28,9 +28,9 @@ const isValid = computed(() => {
 function downloadImages(){
   images = extractLargestImages(results)
   console.log(images)
-  loading.value = true;
+  loading.value = true
   saveFiles(images)
-  loading.value = false;
+  loading.value = false
   download_as.value = ''
 }
 

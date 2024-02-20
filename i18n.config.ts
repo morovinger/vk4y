@@ -20,9 +20,15 @@ export default defineI18nConfig(() => ({
             download_by_photos: 'Download all photos',
             download_by_album: 'Download all albums -- soon',
             done:'All done',
+            url_not_valid:'Must be valid URL',
+            url_not_vk:'Must be VK.com URL',
+            url_not_album:'Must contain `album` or `albums` in URL',
+            url_not_https:'Must start with `https://',
+            about_about:'Its free and open-source tool. Advises and bug-reports are appreciated and can be send at morovinger gmail.com or directly at github project',
+            about_move_photo:'Before download 2k+ albums better to split it. For it you can use https://vk.com/movephotos',
         },
         ru: {
-            title: "скачать альбомы с Vk.com",
+            title: "Скачать альбомы с Vk.com",
             description: "Скачайте ваши альбомы с Vk.com бесплатно",
             welcome: 'Привет',
             home: "Главная",
@@ -39,6 +45,12 @@ export default defineI18nConfig(() => ({
             download_by_photos: 'Скачать все фото',
             download_by_album: 'Скачать все альбомы -- Скоро',
             done:'Все скачено',
+            url_not_valid:'Должен быть валидный URL',
+            url_not_vk:'Должен быть vk.com',
+            url_not_album:'Url должен содержать album или albums',
+            url_not_https:'Url должен начинатся с `https://`',
+            about_about:'Это бесплатная программа с открытым исходным кодом. Отзывы и баги можно отправить на morovinger gmail.com или на гит-хаб проекта',
+            about_move_photo:'Чтобы сказать альбомы с 2к+ фото их лучше сначала разделить этой программой https://vk.com/movephotos',
         }
     }
 }))

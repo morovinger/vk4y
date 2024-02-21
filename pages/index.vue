@@ -14,7 +14,7 @@ const message = ref('')
 const loading = ref(false)
 
 const urlRules = [
-  v => !!v || 'URL is required',
+  v => !!v || t('url_not_valid'),
   v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
   v => v.includes('vk.com') || t('url_not_vk'),
   v => v.includes('album') || t('url_not_album'),
@@ -204,7 +204,7 @@ function clear(){
               block=""
               @click="check"
             >
-              Check
+              {{ t('check') }}
             </v-btn>
           </v-col>
           <v-col cols="2">
@@ -212,7 +212,7 @@ function clear(){
               type="submit"
               @click="clear"
             >
-              Clear
+              {{ t('clear') }}
             </v-btn>
           </v-col>
         </v-row>
@@ -233,13 +233,13 @@ function clear(){
             v-if="download_as === 'photos'"
             @click="downloadImages"
           >
-            {{ $t('download_by_photos') }}
+            {{ t('download_by_photos') }}
           </v-btn>
           <v-btn
             v-if="download_as === 'albums'"
             :disabled="true"
           >
-            {{ $t('download_by_album') }}
+            {{ t('download_by_album') }}
           </v-btn>
         </v-col>
       </v-row>

@@ -77,7 +77,7 @@
             >
               <v-btn>
                 <Icon
-                  name="fxemoji:russianflag"
+                  name="twemoji:flag-england"
                   size="2em"
                 />
               </v-btn>
@@ -88,7 +88,7 @@
             >
               <v-btn>
                 <Icon
-                  name="twemoji:flag-england"
+                  name="fxemoji:russianflag"
                   size="2em"
                 />
               </v-btn>

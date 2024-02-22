@@ -42,12 +42,12 @@ onMounted( () => {
       v-if="token"
       class="logout"
     >
-      <p>{{ $t('logged') }}</p>
+      <p>{{ t('logged') }}</p>
       <v-btn
         color="primary"
         @click="logout"
       >
-        {{ $t('logout') }}
+        {{ t('logout') }}
       </v-btn>
     </div>
 
@@ -56,7 +56,7 @@ onMounted( () => {
       class="login"
     >
       <v-btn @click="login">
-        {{ $t('login') }}
+        {{ t('login') }}
       </v-btn>
     </div>
   </div>

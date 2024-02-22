@@ -14,7 +14,7 @@ const message = ref('')
 const loading = ref(false)
 
 const urlRules = [
-  v => !!v || t('url_not_valid'),
+  v => !!v || t('url_not_url'),
   v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
   v => v.includes('vk.com') || t('url_not_vk'),
   v => v.includes('album') || t('url_not_album'),
@@ -31,6 +31,12 @@ function downloadImages(){
   loading.value = true
   saveFiles(images)
   loading.value = false
+  download_as.value = ''
+}
+
+function clear(){
+  url.value = ''
+  message.value = ''
   download_as.value = ''
 }
 
@@ -64,6 +70,10 @@ function check() {
   });
 }
 
+function parseUrl() {
+
+}
+
 function getUserAlbums(parsedUrl:URL) {
   return new Promise((resolve, reject) => {
     const pathname = parsedUrl.pathname;
@@ -78,8 +88,9 @@ function getUserAlbums(parsedUrl:URL) {
         console.log(response.response);
         resolve(response.response.items); // Resolve with the albums data
       } else {
-        console.error(response);
-        reject(new Error('Error fetching albums'));
+        console.error(response)
+        message.value = t('error_fetching')
+        reject(new Error('Error fetching albums'))
       }
     });
   });
@@ -88,7 +99,15 @@ function getUserAlbums(parsedUrl:URL) {
 function getUserPhotos(parsedUrl:URL) {
   const pathname = parsedUrl.pathname;
   const path = pathname.split('_');
-  const album_id = path[1];
+
+  //we need to check if its technical album (0 -6 profile, 00 -7 wall, 000 ? saved and we cant get saved)
+  const album_id = path[1] === "0" ? "-6" : path[1] === "00" ? "-7" : path[1] === "000" ? "saved" : path[1];
+
+  //if its SAVED album we cant download it
+  if (album_id === 'saved'){
+    message.value = t('error_saved') + ' https://vk.com/movephotos'
+    return
+  }
 
   // Determine owner_id based on URL format
   const owner_id = path[0].includes('-') ? '-' + path[0].split('-')[1] : path[0].match(/\d+/)[0];
@@ -174,17 +193,13 @@ async function saveFiles(images: any[]) {
   }
 }
 
-function clear(){
-  url.value = ''
-}
-
 </script>
 
 <template>
   <div>
     <div v-if="token">
       <v-form
-        fast-fail="true"
+        fast-fail
         @submit.prevent
       >
         <v-spacer />

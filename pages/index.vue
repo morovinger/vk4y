@@ -12,6 +12,7 @@ const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
+const albums = ref({})
 
 const urlRules = [
   v => !!v || t('url_not_url'),
@@ -38,6 +39,7 @@ function clear(){
   url.value = ''
   message.value = ''
   download_as.value = ''
+  albums.value = {}
 }
 
 function check() {
@@ -49,41 +51,55 @@ function check() {
   }
 
   const parsedUrl = new URL(url.value);
+  const pathname = parsedUrl.pathname;
+  const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
+  const path = pathname.split('_');
   const isAlbums = url.value.includes('albums');
-  const promise = isAlbums ? getUserAlbums(parsedUrl) : getUserPhotos(parsedUrl);
+
+  const promise = isAlbums ? getUserAlbums(owner_id) : getUserPhotos(path);
 
   promise.then((result: string | any[]) => {
     if (result && result.length > 0) {
       message.value = `${t('found')} ${result.length} ${isAlbums ? t('albums') : t('photos')}`;
-      results = result;
+      console.log(result[0])
+      results = prepareResult(result);
       download_as.value = isAlbums ? 'albums' : 'photos'
     } else {
       message.value = t('no_results_found');
-      results = [];
+      results = {};
       download_as.value = '';
     }
   }).catch((error: any) => {
     console.error(error);
     setError(t('error_fetching'));
-    results = [];
+    results = {};
     download_as.value = '';
   });
 }
 
-function parseUrl() {
-
+function prepareResult(result: string | any[]){
+  let data = [];
+  console.log(result, result.length)
+  if(result.length > 100){
+    const flattened = {};
+    Object.keys(result).forEach(key => {
+      // Flatten each array of arrays into a single array
+      console.log(result[key])
+      flattened[key] = result[key].reduce((acc, val) => acc.concat(val), []);
+    });
+    console.log(flattened)
+  }
+  //nestedArray.reduce((acc, current) => acc.concat(current), []);
 }
 
-function getUserAlbums(parsedUrl:URL) {
+function getUserAlbums(owner_id: string) {
   return new Promise((resolve, reject) => {
-    const pathname = parsedUrl.pathname;
-    const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
 
     VK.Api.call('photos.getAlbums', {
       owner_id: owner_id,
       need_system: 1,
       v: '5.194'
-    }, function(response) {
+    }, function(response: { response: { items: unknown; }; }) {
       if (response.response) {
         console.log(response.response);
         resolve(response.response.items); // Resolve with the albums data
@@ -96,26 +112,35 @@ function getUserAlbums(parsedUrl:URL) {
   });
 }
 
-function getUserPhotos(parsedUrl:URL) {
-  const pathname = parsedUrl.pathname;
-  const path = pathname.split('_');
+function getUserPhotos(url_data: { [key: string]: any }) {
 
-  //we need to check if its technical album (0 -6 profile, 00 -7 wall, 000 ? saved and we cant get saved)
-  const album_id = path[1] === "0" ? "-6" : path[1] === "00" ? "-7" : path[1] === "000" ? "saved" : path[1];
+  let album_id = ''
+  let owner_id = ''
 
-  //if its SAVED album we cant download it
+  //we can call it directly from user's string or use it internally
+  if (url_data['id']) {
+    //if we call it directly
+    album_id = url_data['id'] === "0" ? "-6" : url_data['id'] === "00" ? "-7" : url_data['id'] === "000" ? "saved" : url_data['id'];
+    owner_id = url_data['owner_id']
+  } else {
+    //we need to check if its technical album (0 -6 profile, 00 -7 wall, 000 ? saved and we cant get saved)
+    album_id = url_data[1] === "0" ? "-6" : url_data[1] === "00" ? "-7" : url_data[1] === "000" ? "saved" : url_data[1];
+    // Determine owner_id based on URL format
+    owner_id = url_data[0].includes('-') ? '-' + url_data[0].split('-')[1] : url_data[0].match(/\d+/)[0];
+  }
+
+  //if its SAVED album we cant download it, we dont have the permissions
   if (album_id === 'saved'){
     message.value = t('error_saved') + ' https://vk.com/movephotos'
     return
   }
-
-  // Determine owner_id based on URL format
-  const owner_id = path[0].includes('-') ? '-' + path[0].split('-')[1] : path[0].match(/\d+/)[0];
-
+  
   // Constants for API requests
   const count = 1000;
   let offset = 0;
   const version = "5.194";
+
+  console.log(album_id, owner_id, url_data)
 
   // Function to fetch photos using VK API
   function fetchPhotos() {
@@ -134,6 +159,8 @@ function getUserPhotos(parsedUrl:URL) {
           resolve(response.response.items);
         } else {
           reject(new Error('Error fetching photos'));
+          message.value = t('error_fetching')
+          console.log(response)
         }
       });
     });
@@ -172,6 +199,25 @@ function extractLargestImages(images: any[]) {
     }
     return null;
   }).filter(url => url != null);
+}
+
+async function saveZip(images: any[]) {
+  try {
+    // Request the user to select a directory
+    const dirHandle = await window.showDirectoryPicker();
+
+    for (const [index, url] of images.entries()) {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const fileHandle = await dirHandle.getFileHandle(`image${index}.png`, { create: true });
+      const writable = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+    }
+    message.value = t('done')
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 async function saveFiles(images: any[]) {

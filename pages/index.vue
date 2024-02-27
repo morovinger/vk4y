@@ -7,12 +7,13 @@ const url = ref('')
 const token = useGlobalToken()
 let results = {}
 const { t } = useI18n()
-let images = []
 const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
 const albums = ref({})
+const items = ref();
+const selectedItems = ref([]);
 
 const urlRules = [
   v => !!v || t('url_not_url'),
@@ -27,10 +28,8 @@ const isValid = computed(() => {
 });
 
 function downloadImages(){
-  images = extractLargestImages(results)
-  console.log(images)
   loading.value = true
-  saveFiles(images)
+  saveFiles(extractLargestImages(results))
   loading.value = false
   download_as.value = ''
 }
@@ -43,29 +42,35 @@ function clear(){
 }
 
 function check() {
-  // Check if url or url.value is null or undefined
-  if (!url || !url.value) {
-    console.error("URL is null or undefined");
-    setError(t('error_invalid_url'));
-    return;
-  }
 
   const parsedUrl = new URL(url.value);
   const pathname = parsedUrl.pathname;
   const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
   const path = pathname.split('_');
   const isAlbums = url.value.includes('albums');
+  const album_id = path[1] === "0" ? "-6" : path[1] === "00" ? "-7" : path[1] === "000" ? "saved" : path[1];
 
-  const promise = isAlbums ? getUserAlbums(owner_id) : getUserPhotos(path);
+  //if its SAVED album we cant download it, we dont have the permissions
+  if (album_id === 'saved'){
+    message.value = t('error_saved') + ' https://vk.com/movephotos'
+    return
+  }
 
-  promise.then((result: string | any[]) => {
-    if (result && result.length > 0) {
-      message.value = `${t('found')} ${result.length} ${isAlbums ? t('albums') : t('photos')}`;
-      console.log(result[0])
-      results = prepareResult(result);
-      download_as.value = isAlbums ? 'albums' : 'photos'
+  console.log(owner_id, album_id, path)
+
+  getUserAlbums(owner_id, album_id).then((result:any) => {
+    console.log(result)
+    if (result.items.length > 0) {
+      results = result.items
+      if (isAlbums){
+        download_as.value = 'albums'
+        message.value = `${t('found')} ${result.items.length} ${t('albums')}`
+      }else{
+        download_as.value = 'photos'
+        message.value = `${t('found')} ${result.items[0]['size']} ${t('photos')} ${t('album')} ${result.items[0]['title']}`
+      }
     } else {
-      message.value = t('no_results_found');
+      message.value = t('error_find');
       results = {};
       download_as.value = '';
     }
@@ -77,72 +82,33 @@ function check() {
   });
 }
 
-function prepareResult(result: string | any[]){
-  let data = [];
-  console.log(result, result.length)
-  if(result.length > 100){
-    const flattened = {};
-    Object.keys(result).forEach(key => {
-      // Flatten each array of arrays into a single array
-      console.log(result[key])
-      flattened[key] = result[key].reduce((acc, val) => acc.concat(val), []);
-    });
-    console.log(flattened)
-  }
-  //nestedArray.reduce((acc, current) => acc.concat(current), []);
-}
-
-function getUserAlbums(owner_id: string) {
+function getUserAlbums(owner_id: string, album_id: string|undefined) {
   return new Promise((resolve, reject) => {
 
     VK.Api.call('photos.getAlbums', {
       owner_id: owner_id,
-      need_system: 1,
-      v: '5.194'
+      album_ids: album_id,
+      v: '5.199'
     }, function(response: { response: { items: unknown; }; }) {
       if (response.response) {
-        console.log(response.response);
-        resolve(response.response.items); // Resolve with the albums data
+        resolve(response.response)
       } else {
         console.error(response)
-        message.value = t('error_fetching')
-        reject(new Error('Error fetching albums'))
+        setError(t('error_fetching'))
+        reject(new Error(t('error_fetching')))
       }
     });
   });
 }
 
-function getUserPhotos(url_data: { [key: string]: any }) {
+function getUserPhotos(owner_id: string, album_id: string) {
 
-  let album_id = ''
-  let owner_id = ''
-
-  //we can call it directly from user's string or use it internally
-  if (url_data['id']) {
-    //if we call it directly
-    album_id = url_data['id'] === "0" ? "-6" : url_data['id'] === "00" ? "-7" : url_data['id'] === "000" ? "saved" : url_data['id'];
-    owner_id = url_data['owner_id']
-  } else {
-    //we need to check if its technical album (0 -6 profile, 00 -7 wall, 000 ? saved and we cant get saved)
-    album_id = url_data[1] === "0" ? "-6" : url_data[1] === "00" ? "-7" : url_data[1] === "000" ? "saved" : url_data[1];
-    // Determine owner_id based on URL format
-    owner_id = url_data[0].includes('-') ? '-' + url_data[0].split('-')[1] : url_data[0].match(/\d+/)[0];
-  }
-
-  //if its SAVED album we cant download it, we dont have the permissions
-  if (album_id === 'saved'){
-    message.value = t('error_saved') + ' https://vk.com/movephotos'
-    return
-  }
-  
-  // Constants for API requests
   const count = 1000;
   let offset = 0;
-  const version = "5.194";
+  const version = "5.199";
 
-  console.log(album_id, owner_id, url_data)
+  console.log(album_id, owner_id)
 
-  // Function to fetch photos using VK API
   function fetchPhotos() {
     return new Promise((resolve, reject) => {
       const code = `return API.photos.get({
@@ -239,6 +205,19 @@ async function saveFiles(images: any[]) {
   }
 }
 
+const toggleSelection = (item) => {
+  const index = selectedItems.value.findIndex(selected => selected.id === item.id);
+  if (index !== -1) {
+    selectedItems.value.splice(index, 1); // Remove if already selected
+  } else {
+    selectedItems.value.push({ id: item.id, name: item.name }); // Add if not selected
+  }
+};
+
+const isSelected = (item) => {
+  return selectedItems.value.some(selected => selected.id === item.id);
+};
+
 </script>
 
 <template>
@@ -283,6 +262,17 @@ async function saveFiles(images: any[]) {
           <h2>
             {{ message }}
           </h2>
+          <div v-if="download_as === 'albums'">
+            <!-- Iterating over items and creating buttons -->
+            <v-btn
+              v-for="item in results"
+              :key="item.id"
+              :class="{'selected-button': isSelected(item)}"
+              @click="toggleSelection(item)"
+            >
+              {{ item.title }}
+            </v-btn>
+          </div>
         </v-col>
         <v-col>
           <v-progress-circular
@@ -290,18 +280,21 @@ async function saveFiles(images: any[]) {
             indeterminate
             color="primary"
           />
-          <v-btn
-            v-if="download_as === 'photos'"
-            @click="downloadImages"
-          >
-            {{ t('download_by_photos') }}
-          </v-btn>
-          <v-btn
-            v-if="download_as === 'albums'"
-            :disabled="true"
-          >
-            {{ t('download_by_album') }}
-          </v-btn>
+          <div v-if="download_as === 'photos'">
+            <v-btn
+              @click="downloadImages"
+            >
+              {{ t('download_by_photos') }}
+            </v-btn>
+          </div>
+          <div v-if="download_as === 'albums'">
+            <v-btn :disabled="true">
+              {{ t('download_by_album') }}
+            </v-btn>
+            <v-btn>
+              {{ t('download_all_albums') }}
+            </v-btn>
+          </div>
         </v-col>
       </v-row>
     </div>
@@ -312,5 +305,9 @@ async function saveFiles(images: any[]) {
 <style lang="less">
   .results{
     justify-content: start;
+  }
+  .selected-button {
+    background-color: blue; /* Change the color as needed */
+    color: white;
   }
 </style>

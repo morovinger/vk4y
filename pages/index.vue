@@ -12,7 +12,6 @@ const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
 const albums = ref({})
-const items = ref();
 const selectedItems = ref([]);
 
 const urlRules = [
@@ -25,6 +24,10 @@ const urlRules = [
 
 const isValid = computed(() => {
   return urlRules.every(rule => rule(url.value) === true);
+});
+
+const selectedCount = computed(() => {
+  return selectedItems.value.length ? `${t('download')} ${selectedItems.value.length} ${t('albums')}` : t('download_by_album')
 });
 
 function downloadImages(){
@@ -207,15 +210,24 @@ async function saveFiles(images: any[]) {
 
 const toggleSelection = (item) => {
   const index = selectedItems.value.findIndex(selected => selected.id === item.id);
+  console.log(item, index, selectedItems.value)
   if (index !== -1) {
-    selectedItems.value.splice(index, 1); // Remove if already selected
+    selectedItems.value.splice(index, 1);
   } else {
-    selectedItems.value.push({ id: item.id, name: item.name }); // Add if not selected
+    selectedItems.value.push({ id: item.id });
   }
 };
 
 const isSelected = (item) => {
-  return selectedItems.value.some(selected => selected.id === item.id);
+  return selectedItems.value.some(selected => selected.id === item.id) ? 'tonal' : 'outlined';
+};
+
+const selectAllAlbums = () => {
+  if (selectedItems.value.length === results.length) {
+    selectedItems.value = [];
+  } else {
+    selectedItems.value = results.map(item => ({ id: item.id }));
+  }
 };
 
 </script>
@@ -262,38 +274,51 @@ const isSelected = (item) => {
           <h2>
             {{ message }}
           </h2>
-          <div v-if="download_as === 'albums'">
+        </v-col>
+      </v-row>
+      <v-row align="start">
+        <v-col md="8">
+          <div
+            v-if="download_as === 'albums'"
+            class="d-flex flex-wrap justify-start"
+          >
             <!-- Iterating over items and creating buttons -->
             <v-btn
               v-for="item in results"
+              :id="item.id"
               :key="item.id"
-              :class="{'selected-button': isSelected(item)}"
+              class="ma-2 pa-2"
+              :variant="isSelected(item)"
               @click="toggleSelection(item)"
             >
-              {{ item.title }}
+              {{ item.title.slice(0, 14) }}
             </v-btn>
           </div>
         </v-col>
-        <v-col>
-          <v-progress-circular
-            v-if="loading"
-            indeterminate
-            color="primary"
-          />
-          <div v-if="download_as === 'photos'">
-            <v-btn
-              @click="downloadImages"
+        <v-col md="4">
+          <div>
+            <div v-if="download_as === 'photos'">
+              <v-btn
+                @click="downloadImages"
+              >
+                {{ t('download_by_photos') }}
+              </v-btn>
+            </div>
+            <div
+              v-if="download_as === 'albums'"
+              class="d-flex align-content-start flex-wrap"
             >
-              {{ t('download_by_photos') }}
-            </v-btn>
-          </div>
-          <div v-if="download_as === 'albums'">
-            <v-btn :disabled="true">
-              {{ t('download_by_album') }}
-            </v-btn>
-            <v-btn>
-              {{ t('download_all_albums') }}
-            </v-btn>
+              <v-btn
+                :disabled="!selectedItems.length"
+                :loading="loading"
+                style="margin-bottom: 20px"
+              >
+                {{ selectedCount }}
+              </v-btn>
+              <v-btn @click="selectAllAlbums">
+                {{ t('download_all_albums') }}
+              </v-btn>
+            </div>
           </div>
         </v-col>
       </v-row>
@@ -305,9 +330,5 @@ const isSelected = (item) => {
 <style lang="less">
   .results{
     justify-content: start;
-  }
-  .selected-button {
-    background-color: blue; /* Change the color as needed */
-    color: white;
   }
 </style>

@@ -2,10 +2,12 @@
 <script lang="ts" setup>
 
 import {useGlobalToken} from "~/composables/useGlobalToken";
+import JSZip from "jszip";
+import FileSaver from "file-saver";
 
 const url = ref('')
 const token = useGlobalToken()
-let results = {}
+let results = ref({})
 const { t } = useI18n()
 const download_as = ref('')
 const { setError } = useGlobalError()
@@ -29,13 +31,6 @@ const isValid = computed(() => {
 const selectedCount = computed(() => {
   return selectedItems.value.length ? `${t('download')} ${selectedItems.value.length} ${t('albums')}` : t('download_by_album')
 });
-
-function downloadImages(){
-  loading.value = true
-  saveFiles(extractLargestImages(results))
-  loading.value = false
-  download_as.value = ''
-}
 
 function clear(){
   url.value = ''
@@ -64,7 +59,7 @@ function check() {
   getUserAlbums(owner_id, album_id).then((result:any) => {
     console.log(result)
     if (result.items.length > 0) {
-      results = result.items
+      results = result
       if (isAlbums){
         download_as.value = 'albums'
         message.value = `${t('found')} ${result.items.length} ${t('albums')}`
@@ -159,52 +154,50 @@ function getUserPhotos(owner_id: string, album_id: string) {
 }
 
 function extractLargestImages(images: any[]) {
-  return images.map(entry => {
-    if (entry.sizes && entry.sizes.length > 0) {
-      const largestImage = entry.sizes.reduce((prev, current) => {
-        return (prev.width * prev.height > current.width * current.height) ? prev : current;
+  const sortedSizes = images.sort((a, b) => b.width - a.width);
+  const maxSize = sortedSizes[0];
+  return maxSize.url;
+}
+
+async function createAndDownloadZips() {
+  try {
+
+    //drop the idea to use native file system for now
+    //const dirHandle = await window.showDirectoryPicker();
+
+    //re-assign results to albums if find by album
+    const albums = results.items ?? selectedItems.value
+    for (const album of albums) {
+      const photos = await getUserPhotos(album.owner_id, album.id);
+      const zip = new JSZip
+      const albumFolder = zip.folder(album.title);
+
+      loading.value = true
+      for (const [index, photo] of photos.entries()) {
+        const largestImage = extractLargestImages(photo.sizes);
+        const response = await fetch(largestImage);
+        if (!response.ok) {
+          continue
+        }
+        const blob = await response.blob();
+        albumFolder.file(`image_${index}.png`, blob);
+      }
+
+      zip.generateAsync({type:"blob"}).then(function (blob) {
+        FileSaver.saveAs(blob, `${album.title}.zip`);
+      }, function (error) {
+        console.error(error);
+        setError(t('error_creating_zip'));
       });
-      return largestImage.url;
     }
-    return null;
-  }).filter(url => url != null);
-}
 
-async function saveZip(images: any[]) {
-  try {
-    // Request the user to select a directory
-    const dirHandle = await window.showDirectoryPicker();
+    message.value = t('done');
+    results.value = {}
+    loading.value = false
 
-    for (const [index, url] of images.entries()) {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const fileHandle = await dirHandle.getFileHandle(`image${index}.png`, { create: true });
-      const writable = await fileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    }
-    message.value = t('done')
   } catch (error) {
     console.error(error);
-  }
-}
-
-async function saveFiles(images: any[]) {
-  try {
-    // Request the user to select a directory
-    const dirHandle = await window.showDirectoryPicker();
-
-    for (const [index, url] of images.entries()) {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const fileHandle = await dirHandle.getFileHandle(`image${index}.png`, { create: true });
-      const writable = await fileHandle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    }
-    message.value = t('done')
-  } catch (error) {
-    console.error(error);
+    setError(t('error_creating_zip'));
   }
 }
 
@@ -226,7 +219,7 @@ const selectAllAlbums = () => {
   if (selectedItems.value.length === results.length) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = results.map(item => ({ id: item.id }));
+    selectedItems.value = results.items.map(item => ({ id: item.id }));
   }
 };
 
@@ -241,7 +234,10 @@ const selectAllAlbums = () => {
       >
         <v-spacer />
         <v-row>
-          <v-col cols="8">
+          <v-col
+            cols="12"
+            md="8"
+          >
             <v-text-field
               v-model="url"
               :rules="urlRules"
@@ -249,7 +245,10 @@ const selectAllAlbums = () => {
               required
             />
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="4"
+            md="2"
+          >
             <v-btn
               type="submit"
               :disabled="!isValid"
@@ -259,7 +258,10 @@ const selectAllAlbums = () => {
               {{ t('check') }}
             </v-btn>
           </v-col>
-          <v-col cols="2">
+          <v-col
+            cols="4"
+            md="2"
+          >
             <v-btn
               type="submit"
               @click="clear"
@@ -282,13 +284,14 @@ const selectAllAlbums = () => {
             v-if="download_as === 'albums'"
             class="d-flex flex-wrap justify-start"
           >
-            <!-- Iterating over items and creating buttons -->
+            <!-- Iterating over albums and creating buttons -->
             <v-btn
-              v-for="item in results"
+              v-for="item in results.items"
               :id="item.id"
               :key="item.id"
               class="ma-2 pa-2"
               :variant="isSelected(item)"
+              :loading="loading"
               @click="toggleSelection(item)"
             >
               {{ item.title.slice(0, 14) }}
@@ -299,7 +302,8 @@ const selectAllAlbums = () => {
           <div>
             <div v-if="download_as === 'photos'">
               <v-btn
-                @click="downloadImages"
+                :loading="loading"
+                @click="createAndDownloadZips"
               >
                 {{ t('download_by_photos') }}
               </v-btn>
@@ -312,11 +316,12 @@ const selectAllAlbums = () => {
                 :disabled="!selectedItems.length"
                 :loading="loading"
                 style="margin-bottom: 20px"
+                @click="createAndDownloadZips"
               >
                 {{ selectedCount }}
               </v-btn>
               <v-btn @click="selectAllAlbums">
-                {{ t('download_all_albums') }}
+                {{ selectedItems.length === results.length ? t('download_all_albums_deselect') : t('download_all_albums_select') }}
               </v-btn>
             </div>
           </div>

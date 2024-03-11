@@ -55,7 +55,7 @@
         >
           <v-col
             sm="2"
-            md="8"
+            md="7"
           >
             <v-app-bar-title class="text-h5">
               Vk4you

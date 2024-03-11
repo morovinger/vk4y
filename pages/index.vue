@@ -15,6 +15,7 @@ const message = ref('')
 const loading = ref(false)
 const albums = ref({})
 const selectedItems = ref([]);
+const owner_id = ref('')
 
 const urlRules = [
   v => !!v || t('url_not_url'),
@@ -43,10 +44,10 @@ function check() {
 
   const parsedUrl = new URL(url.value);
   const pathname = parsedUrl.pathname;
-  const owner_id = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
   const path = pathname.split('_');
-  const isAlbums = url.value.includes('albums');
   const album_id = path[1] === "0" ? "-6" : path[1] === "00" ? "-7" : path[1] === "000" ? "saved" : path[1];
+  owner_id.value = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
+  download_as.value = url.value.includes('albums') ? 'albums' : 'photos';
 
   //if its SAVED album we cant download it, we dont have the permissions
   if (album_id === 'saved'){
@@ -56,26 +57,25 @@ function check() {
 
   console.log(owner_id, album_id, path)
 
-  getUserAlbums(owner_id, album_id).then((result:any) => {
+  getUserAlbums(owner_id.value, album_id).then((result:any) => {
     console.log(result)
     if (result.items.length > 0) {
-      results = result
-      if (isAlbums){
-        download_as.value = 'albums'
+      results.value = result
+      if (download_as.value ==='albums'){
         message.value = `${t('found')} ${result.items.length} ${t('albums')}`
       }else{
-        download_as.value = 'photos'
         message.value = `${t('found')} ${result.items[0]['size']} ${t('photos')} ${t('album')} ${result.items[0]['title']}`
       }
     } else {
       message.value = t('error_find');
-      results = {};
+      results.value = {};
       download_as.value = '';
     }
   }).catch((error: any) => {
     console.error(error);
     setError(t('error_fetching'));
-    results = {};
+    message.value = t('error_find');
+    results.value = {};
     download_as.value = '';
   });
 }
@@ -104,8 +104,6 @@ function getUserPhotos(owner_id: string, album_id: string) {
   const count = 1000;
   let offset = 0;
   const version = "5.199";
-
-  console.log(album_id, owner_id)
 
   function fetchPhotos() {
     return new Promise((resolve, reject) => {
@@ -162,13 +160,14 @@ function extractLargestImages(images: any[]) {
 async function createAndDownloadZips() {
   try {
 
-    //drop the idea to use native file system for now
+    //dropped the idea to use native file system for now
     //const dirHandle = await window.showDirectoryPicker();
 
     //re-assign results to albums if find by album
-    const albums = selectedItems.value ?? results.items
+    const albums = download_as.value === 'albums' ? selectedItems.value : results.value.items
+
     for (const album of albums) {
-      const photos = await getUserPhotos(album.owner_id, album.id);
+      const photos = await getUserPhotos(owner_id.value, album.id);
       const zip = new JSZip
       const albumFolder = zip.folder(album.title);
 
@@ -207,7 +206,7 @@ const toggleSelection = (item) => {
   if (index !== -1) {
     selectedItems.value.splice(index, 1);
   } else {
-    selectedItems.value.push({ id: item.id });
+    selectedItems.value.push({ id: item.id, title:item.title });
   }
 };
 
@@ -291,7 +290,6 @@ const selectAllAlbums = () => {
               :key="item.id"
               class="ma-2 pa-2"
               :variant="isSelected(item)"
-              :loading="loading"
               @click="toggleSelection(item)"
             >
               {{ item.title.slice(0, 14) }}

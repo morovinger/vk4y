@@ -166,7 +166,7 @@ async function createAndDownloadZips() {
     //const dirHandle = await window.showDirectoryPicker();
 
     //re-assign results to albums if find by album
-    const albums = results.items ?? selectedItems.value
+    const albums = selectedItems.value ?? results.items
     for (const album of albums) {
       const photos = await getUserPhotos(album.owner_id, album.id);
       const zip = new JSZip

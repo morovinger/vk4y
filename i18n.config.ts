@@ -64,7 +64,7 @@ export default defineI18nConfig(() => ({
             error_no_result:'Результатов для этого URL не найдено',
             error_creating_zip:'Ошибка создания архива',
             download_by_photos: 'Скачать все фото',
-            download_by_album: 'Выберите альбомы чтобы скачать',
+            download_by_album: 'Выберите альбомы',
             download_all_albums_select: 'Выбрать все',
             download_all_albums_deselect: 'Снять выделение',
             done:'Все скачено',

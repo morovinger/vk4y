@@ -74,7 +74,7 @@ export default defineNuxtConfig({
           "content": "Скачайте ваши альбомы с Vk.com бесплатно"
         },
         {
-          "property": "google-site-verification",
+          "name": "google-site-verification",
           "content": "BhfaizbYuIdqztjCdfOiDnBZBO3YXQamuTziXDfwzXo"
         }
       ]

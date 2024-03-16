@@ -16,6 +16,15 @@
     ogImage: 'https://example.com/image.png',
   })
 
+  useHead({
+    meta: [
+      {
+        name: 'google-site-verification',
+        content: 'BhfaizbYuIdqztjCdfOiDnBZBO3YXQamuTziXDfwzXo'
+      }
+    ]
+  })
+
   function toggleTheme () {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
   }

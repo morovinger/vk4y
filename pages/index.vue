@@ -166,6 +166,10 @@ async function createAndDownloadZips() {
     //re-assign results to albums if find by album
     const albums = download_as.value === 'albums' ? selectedItems.value : results.value.items
 
+    if (albums.length > 100){
+      message.value = t('download_all_too_many')
+    }
+
     for (const album of albums) {
       const photos = await getUserPhotos(owner_id.value, album.id);
       const zip = new JSZip
@@ -193,6 +197,7 @@ async function createAndDownloadZips() {
     message.value = t('done');
     results.value = {}
     loading.value = false
+    selectedItems.value = []
 
   } catch (error) {
     console.error(error);
@@ -215,10 +220,10 @@ const isSelected = (item) => {
 };
 
 const selectAllAlbums = () => {
-  if (selectedItems.value.length === results.length) {
+  if (selectedItems.value.length === results.value.length) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = results.items.map(item => ({ id: item.id }));
+    selectedItems.value = results.value.items.map(item => ({ id: item.id }));
   }
 };
 

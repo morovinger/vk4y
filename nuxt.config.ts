@@ -44,5 +44,40 @@ export default defineNuxtConfig({
   app: {
     baseURL: '/vk4y/', // baseURL: '/<repository>/'
     buildAssetsDir: 'assets', // don't use "_" at the begining
+    "head": {
+      "meta": [
+        {
+          "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "title",
+          "content": "Скачать альбомы с Vk.com"
+        },
+        {
+          "name": "description",
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
+        },
+        {
+          "name": "keywords",
+          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com"
+        },
+        {
+          "property": "og:title",
+          "content": "Скачать альбомы с Vk.com"
+        },
+        {
+          "property": "og:description",
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
+        },
+        {
+          "property": "google-site-verification",
+          "content": "BhfaizbYuIdqztjCdfOiDnBZBO3YXQamuTziXDfwzXo"
+        }
+      ]
+      }
   },
 })

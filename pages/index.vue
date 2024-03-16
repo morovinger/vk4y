@@ -171,9 +171,9 @@ async function createAndDownloadZips() {
     }
 
     for (const album of albums) {
+      console.log(album)
       const photos = await getUserPhotos(owner_id.value, album.id);
       const zip = new JSZip
-      const albumFolder = zip.folder(album.title);
 
       loading.value = true
       for (const [index, photo] of photos.entries()) {
@@ -183,7 +183,7 @@ async function createAndDownloadZips() {
           continue
         }
         const blob = await response.blob();
-        albumFolder.file(`image_${index}.png`, blob);
+        zip.file(`image_${index}.png`, blob);
       }
 
       zip.generateAsync({type:"blob"}).then(function (blob) {
@@ -223,7 +223,7 @@ const selectAllAlbums = () => {
   if (selectedItems.value.length === results.value.length) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = results.value.items.map(item => ({ id: item.id }));
+    selectedItems.value = results.value.items.map(item => ({ id: item.id, title:item.title }));
   }
 };
 

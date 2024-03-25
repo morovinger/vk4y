@@ -109,8 +109,11 @@
       <error />
       <v-container>
         <v-row>
-          <v-col cols="10">
+          <v-col cols="12">
             {{ t("title") }}
+          </v-col>
+          <v-col cols="12">
+            {{ t("use") }}
           </v-col>
         </v-row>
       </v-container>
@@ -124,6 +127,9 @@
       <v-container>
         <!-- Footer content here -->
         <v-row justify="center">
+          <v-col cols="12">
+            {{ t("cookie") }}
+          </v-col>
           <v-col cols="10">
             Vk4y is free and open-source
           </v-col>

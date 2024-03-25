@@ -7,14 +7,14 @@ import FileSaver from "file-saver";
 
 const url = ref('')
 const token = useGlobalToken()
-let results = ref({})
+const results = ref({})
 const { t } = useI18n()
 const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
 const albums = ref({})
-const selectedItems = ref([]);
+const selectedItems = ref([])
 const owner_id = ref('')
 
 const urlRules = [
@@ -171,6 +171,9 @@ async function createAndDownloadZips() {
     }
 
     for (const album of albums) {
+      if (album.length > 1000){
+        message.value = t('download_archive_too_many')
+      }
       console.log(album)
       const photos = await getUserPhotos(owner_id.value, album.id);
       const zip = new JSZip

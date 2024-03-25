@@ -5,6 +5,8 @@ export default defineI18nConfig(() => ({
         en: {
             index: "Home",
             title: "Vk.com album downloader",
+            use: "Login to VK, paste the link to your albums and the photos will be packaged and downloaded directly in your browser!",
+            cookie: "We use cookie",
             description: "Download you favorite photos form Vk.com for free",
             welcome: 'Welcome',
             home: "Main page",
@@ -31,6 +33,7 @@ export default defineI18nConfig(() => ({
             download_all_albums_select: 'Select all',
             download_all_albums_deselect: 'De-Select all',
             download_all_too_many: 'Download 100+ albums could take a lot of time, dont turn off you PC',
+            download_archive_too_many: 'Archive more than 1000 of photos could take a lot of time, dont turn off you PC',
             url_not_url: 'URL is required',
             url_not_valid:'Must be valid URL',
             url_not_vk:'Must be VK.com URL',
@@ -44,6 +47,8 @@ export default defineI18nConfig(() => ({
         ru: {
             index: "Главная",
             title: "Скачать альбомы с Vk.com",
+            use: "Зайдите в вк, вставьте ссылку на ваши альбомы и фото упакуются и скачаются прямо в вашем браузере!",
+            cookie: "Мы используем куки",
             description: "Скачайте ваши альбомы с Vk.com бесплатно",
             welcome: 'Привет',
             home: "Главная",
@@ -70,6 +75,7 @@ export default defineI18nConfig(() => ({
             download_all_albums_select: 'Выбрать все',
             download_all_albums_deselect: 'Снять выделение',
             download_all_too_many: 'При скачивании более 100 альбомов может потребоватся много времени, не выключайте пк',
+            download_archive_too_many: 'Упаковать больше 1000 фото может потребоватся много времени, не выключайте пк',
             url_not_url: 'Вставьте URL',
             url_not_valid:'Должен быть валидный URL',
             url_not_vk:'Должен быть vk.com',

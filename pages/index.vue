@@ -38,6 +38,8 @@ function clear(){
   message.value = ''
   download_as.value = ''
   albums.value = {}
+  results.value = {}
+  selectedItems.value = []
 }
 
 function check() {
@@ -143,6 +145,9 @@ function getUserPhotos(owner_id: string, album_id: string) {
   return fetchAllPhotos()
       .then(allPhotos => {
         console.log('All photos fetched', allPhotos);
+        if (allPhotos.length > 1000){
+          message.value = t('download_archive_too_many')
+        }
         return allPhotos.length ? allPhotos : false;
       })
       .catch(error => {
@@ -166,14 +171,11 @@ async function createAndDownloadZips() {
     //re-assign results to albums if find by album
     const albums = download_as.value === 'albums' ? selectedItems.value : results.value.items
 
-    if (albums.length > 100){
+    if (albums.length > 10){
       message.value = t('download_all_too_many')
     }
 
     for (const album of albums) {
-      if (album.length > 1000){
-        message.value = t('download_archive_too_many')
-      }
       console.log(album)
       const photos = await getUserPhotos(owner_id.value, album.id);
       const zip = new JSZip
@@ -198,8 +200,11 @@ async function createAndDownloadZips() {
     }
 
     message.value = t('done');
-    results.value = {}
     loading.value = false
+    url.value = ''
+    download_as.value = ''
+    albums.value = {}
+    results.value = {}
     selectedItems.value = []
 
   } catch (error) {
@@ -284,6 +289,11 @@ const selectAllAlbums = () => {
             {{ message }}
           </h2>
         </v-col>
+        <v-col>
+          <p v-if="loading">
+            {{ t('download_process') }}
+          </p>
+        </v-col>
       </v-row>
       <v-row align="start">
         <v-col md="8">
@@ -291,7 +301,7 @@ const selectAllAlbums = () => {
             v-if="download_as === 'albums'"
             class="d-flex flex-wrap justify-start"
           >
-            <!-- Iterating over albums and creating buttons -->
+            <!-- Iterate over albums and create buttons -->
             <v-btn
               v-for="item in results.items"
               :id="item.id"

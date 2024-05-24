@@ -9,10 +9,13 @@ export default defineNuxtConfig({
   },
   modules: [
     'vuetify-nuxt-module',
-    '@nuxtjs/eslint-module',
+    '@nuxt/eslint',
     '@nuxtjs/i18n',
     'nuxt-icon'
   ],
+  eslint: {
+    // options here
+  },
   i18n: {
      vueI18n: './i18n.config.ts',
      locales: ['en', 'ru'], // used in URL path prefix

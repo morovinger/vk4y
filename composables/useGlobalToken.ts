@@ -2,7 +2,7 @@ import { createGlobalState } from '@vueuse/core'
 import {useCookie} from "#app";
 
 //extract and check global token from cookie and put it at global if valid
-//cookie itself is settings up by vk open api on response itself
+//cookie itself is settings up by vk open api on response
 
 const id = useGlobalId();
 

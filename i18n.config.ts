@@ -28,7 +28,7 @@ export default defineI18nConfig(() => ({
             error_saved: 'We cant get you SAVED album. Use this tool to move your SAVED photos to another album',
             error_no_result:'No results found for this',
             error_creating_zip:'Error creating ZIP',
-            download_process: 'You images downlading and packaging, wait for it',
+            download_process: 'You images is downloading and packaging, wait for it',
             download_by_photos: 'Download all photos',
             download_by_album: 'Select albums to download',
             download_all_albums_select: 'Select all',

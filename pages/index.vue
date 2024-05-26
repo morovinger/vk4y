@@ -16,6 +16,7 @@ const loading = ref(false)
 const albums = ref({})
 const selectedItems = ref([])
 const owner_id = ref('')
+const progress = ref(0)
 
 const urlRules = [
   v => !!v || t('url_not_url'),
@@ -40,6 +41,7 @@ function clear(){
   albums.value = {}
   results.value = {}
   selectedItems.value = []
+  progress.value = 0
 }
 
 function check() {
@@ -181,6 +183,8 @@ async function createAndDownloadZips() {
       const zip = new JSZip
 
       loading.value = true
+      progress.value = 0
+
       for (const [index, photo] of photos.entries()) {
         const largestImage = extractLargestImages(photo.sizes);
         const response = await fetch(largestImage);
@@ -189,6 +193,7 @@ async function createAndDownloadZips() {
         }
         const blob = await response.blob();
         zip.file(`image_${index}.png`, blob);
+        progress.value = ((index + 1) / photos.length) * 100;
       }
 
       zip.generateAsync({type:"blob"}).then(function (blob) {
@@ -201,6 +206,7 @@ async function createAndDownloadZips() {
 
     message.value = t('done');
     loading.value = false
+    progress.value = 0
     url.value = ''
     download_as.value = ''
     albums.value = {}
@@ -293,6 +299,17 @@ const selectAllAlbums = () => {
           <p v-if="loading">
             {{ t('download_process') }}
           </p>
+        </v-col>
+        <v-col>
+          <v-progress-linear
+              v-if="loading"
+              v-model="progress"
+              color="primary"
+              height="25"
+              rounded
+          >
+            <strong>{{ Math.ceil(progress) }}%</strong>
+          </v-progress-linear>
         </v-col>
       </v-row>
       <v-row align="start">

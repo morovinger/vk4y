@@ -17,6 +17,7 @@ const albums = ref({})
 const selectedItems = ref([])
 const owner_id = ref('')
 const progress = ref(0)
+const albumName = ref('')
 
 const urlRules = [
   v => !!v || t('url_not_url'),
@@ -42,6 +43,7 @@ function clear(){
   results.value = {}
   selectedItems.value = []
   progress.value = 0
+  albumName.value = ''
 }
 
 function check() {
@@ -184,6 +186,7 @@ async function createAndDownloadZips() {
 
       loading.value = true
       progress.value = 0
+      albumName.value = album.title
 
       for (const [index, photo] of photos.entries()) {
         const largestImage = extractLargestImages(photo.sizes);
@@ -212,6 +215,7 @@ async function createAndDownloadZips() {
     albums.value = {}
     results.value = {}
     selectedItems.value = []
+    albumName.value = ''
 
   } catch (error) {
     console.error(error);
@@ -301,6 +305,9 @@ const selectAllAlbums = () => {
           </p>
         </v-col>
         <v-col>
+          <div>
+            {{albumName}}
+          </div>
           <v-progress-linear
               v-if="loading"
               v-model="progress"

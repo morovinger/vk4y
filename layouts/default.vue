@@ -110,7 +110,9 @@
       <v-container>
         <v-row>
           <v-col cols="12">
-            {{ t("title") }}
+            <h1>
+              {{ t("title") }}
+            </h1>
           </v-col>
           <v-col cols="12">
             {{ t("use") }}

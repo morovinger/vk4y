@@ -48,6 +48,7 @@ export default defineNuxtConfig({
     baseURL: '/vk4y/', // baseURL: '/<repository>/'
     buildAssetsDir: 'assets', // don't use "_" at the begining
     "head": {
+      "title": "Скачать альбомы с Vk.com бесплатно",
       "meta": [
         {
           "charset": "utf-8"
@@ -58,7 +59,7 @@ export default defineNuxtConfig({
         },
         {
           "name": "title",
-          "content": "Скачать альбомы с Vk.com"
+          "content": "Скачать альбомы с Vk.com бесплатно"
         },
         {
           "name": "description",

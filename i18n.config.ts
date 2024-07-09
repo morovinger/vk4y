@@ -4,7 +4,7 @@ export default defineI18nConfig(() => ({
     messages: {
         en: {
             index: "Home",
-            title: "Vk.com album downloader",
+            title: "Free Vk.com album downloader",
             use: "Login to VK, paste the link to your albums and the photos will be packaged and downloaded directly in your browser!",
             cookie: "We use cookie",
             description: "Download you favorite photos form Vk.com for free",
@@ -47,7 +47,7 @@ export default defineI18nConfig(() => ({
         },
         ru: {
             index: "Главная",
-            title: "Скачать альбомы с Vk.com",
+            title: "Скачать альбомы с Vk.com бесплатно",
             use: "Зайдите в вк, вставьте ссылку на ваши альбомы и фото упакуются и скачаются прямо в вашем браузере!",
             cookie: "Мы используем куки",
             description: "Скачайте ваши альбомы с Vk.com бесплатно",

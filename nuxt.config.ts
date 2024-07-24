@@ -18,9 +18,13 @@ export default defineNuxtConfig({
     // options here
   },
   i18n: {
-     vueI18n: './i18n.config.ts',
-     locales: ['en', 'ru'], // used in URL path prefix
-     defaultLocale: 'ru', // default locale of your project for Nuxt pages and routings
+    vueI18n: './i18n.config.ts',
+    baseUrl: 'https://morovinger.github.io/vk4y/',
+    defaultLocale: 'ru',
+    locales: [
+      { code: 'en', iso: 'en-US' },
+      { code: 'ru', iso: 'ru-RU' },
+    ],
   },
   css: [
     "~/assets/style.less",
@@ -49,6 +53,7 @@ export default defineNuxtConfig({
     url: 'https://morovinger.github.io/vk4y/',
     name: 'vk4y',
     description: 'Скачайте ваши альбомы с Vk.com бесплатно',
+    defaultLocale: 'ru',
   },
   app: {
     baseURL: '/vk4y/', // baseURL: '/<repository>/'
@@ -58,6 +63,30 @@ export default defineNuxtConfig({
       "meta": [
         {
           "charset": "utf-8"
+        },
+        {
+          "name": "viewport",
+          "content": "width=device-width, initial-scale=1"
+        },
+        {
+          "name": "title",
+          "content": "Скачать альбомы с Vk.com бесплатно"
+        },
+        {
+          "name": "description",
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
+        },
+        {
+          "name": "keywords",
+          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com"
+        },
+        {
+          "property": "og:title",
+          "content": "Скачать альбомы с Vk.com"
+        },
+        {
+          "property": "og:description",
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
         },
         {
           "name": "google-site-verification",

@@ -11,7 +11,8 @@ export default defineNuxtConfig({
     'vuetify-nuxt-module',
     '@nuxt/eslint',
     '@nuxtjs/i18n',
-    'nuxt-icon'
+    'nuxt-icon',
+    "@nuxtjs/seo"
   ],
   eslint: {
     // options here
@@ -44,6 +45,11 @@ export default defineNuxtConfig({
       }
     },
   },
+  site: {
+    url: 'https://morovinger.github.io/vk4y/',
+    name: 'vk4y',
+    description: 'Скачайте ваши альбомы с Vk.com бесплатно',
+  },
   app: {
     baseURL: '/vk4y/', // baseURL: '/<repository>/'
     buildAssetsDir: 'assets', // don't use "_" at the begining
@@ -52,30 +58,6 @@ export default defineNuxtConfig({
       "meta": [
         {
           "charset": "utf-8"
-        },
-        {
-          "name": "viewport",
-          "content": "width=device-width, initial-scale=1"
-        },
-        {
-          "name": "title",
-          "content": "Скачать альбомы с Vk.com бесплатно"
-        },
-        {
-          "name": "description",
-          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
-        },
-        {
-          "name": "keywords",
-          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com"
-        },
-        {
-          "property": "og:title",
-          "content": "Скачать альбомы с Vk.com"
-        },
-        {
-          "property": "og:description",
-          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
         },
         {
           "name": "google-site-verification",

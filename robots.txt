@@ -2,5 +2,5 @@
 User-agent: *
 Disallow: 
 
-Sitemap: https://morovinger.github.io/vk4y/sitemap_index.xml
+Sitemap: https://morovinger.github.io/sitemap_index.xml
 # END nuxt-robots

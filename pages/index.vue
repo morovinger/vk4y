@@ -1,12 +1,13 @@
 
 <script lang="ts" setup>
 
-import {useGlobalToken} from "~/composables/useGlobalToken";
 import JSZip from "jszip";
 import FileSaver from "file-saver";
 
+const { $globalToken } = useNuxtApp()
+//console.log($globalToken)
 const url = ref('')
-const token = useGlobalToken()
+const token = $globalToken
 const results = ref({})
 const { t } = useI18n()
 const download_as = ref('')

@@ -4,9 +4,19 @@ import {md2} from "vuetify/blueprints";
 
 export default defineNuxtConfig({
   ssr: false,
+
+  nitro: {
+    esbuild: {
+      options: {
+        target: 'esnext'
+      }
+    }
+  },
+
   devtools: {
     enabled: false
   },
+
   modules: [
     'vuetify-nuxt-module',
     '@nuxt/eslint',
@@ -14,21 +24,25 @@ export default defineNuxtConfig({
     'nuxt-icon',
     "@nuxtjs/seo"
   ],
+
   eslint: {
     // options here
   },
+
   i18n: {
     vueI18n: './i18n.config.ts',
-    baseUrl: 'https://morovinger.github.io/vk4y/',
+    baseUrl: 'https://morovinger.github.io/',
     defaultLocale: 'ru',
     locales: [
       { code: 'en', iso: 'en-US' },
       { code: 'ru', iso: 'ru-RU' },
     ],
   },
+
   css: [
     "~/assets/style.less",
   ],
+
   vuetify: {
     moduleOptions: {
       /* module specific options */
@@ -37,9 +51,15 @@ export default defineNuxtConfig({
       blueprint: md2,
     }
   },
+
   build: {
     transpile: ["vuetify"]
   },
+
+  plugins: [
+    '~/plugins/globalToken.ts'
+  ],
+
   vite: {
     vue: {
       template: {
@@ -49,12 +69,18 @@ export default defineNuxtConfig({
       }
     },
   },
+
   site: {
     url: 'https://morovinger.github.io/vk4y/',
     name: 'vk4y',
     description: 'Скачайте ваши альбомы с Vk.com бесплатно',
     defaultLocale: 'ru',
   },
+
+  ogImage: {
+    enabled: false
+  },
+
   app: {
     baseURL: '/vk4y/', // baseURL: '/<repository>/'
     buildAssetsDir: 'assets', // don't use "_" at the begining
@@ -99,4 +125,6 @@ export default defineNuxtConfig({
       ]
       }
   },
+
+  compatibilityDate: "2024-07-25",
 })

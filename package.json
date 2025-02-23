@@ -14,17 +14,17 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "@nuxt/eslint": "^0.3.13",
-    "@nuxtjs/i18n": "^8.3.1",
+    "@nuxt/eslint": "^0.4.0",
+    "@nuxtjs/i18n": "^8.3.3",
     "@nuxtjs/seo": "^2.0.0-rc.16",
     "@types/file-saver": "^2.0.7",
-    "eslint": "^9.7.0",
+    "eslint": "^9.8.0",
     "gh-pages": "^6.1.1",
     "less": "^4.2.0",
     "nuxt": "^3.12.4",
     "nuxt-icon": "^0.6.10",
-    "vue": "^3.4.33",
-    "vue-router": "^4.4.0",
+    "vue": "^3.4.35",
+    "vue-router": "^4.4.2",
     "vuetify-nuxt-module": "^0.16.1"
   },
   "dependencies": {

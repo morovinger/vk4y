@@ -1,14 +1,15 @@
 
 <script setup>
-import { useGlobalToken } from '~/composables/useGlobalToken';
+
 import { useGlobalId } from '~/composables/useGlobalID';
 import { useGlobalError } from '~/composables/useGlobalError';
 import { useI18n } from 'vue-i18n';
 
+const { $globalToken } = useNuxtApp()
 const { t } = useI18n();
 const apiId = useGlobalId();
 const permissions = 4 | 2;
-const token = ref(useGlobalToken());
+const token = ref($globalToken());
 const { setError } = useGlobalError();
 
 const login = () => {

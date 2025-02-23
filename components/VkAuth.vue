@@ -1,16 +1,13 @@
 
 <script setup>
 
-import { useGlobalId } from '~/composables/useGlobalID';
 import { useGlobalError } from '~/composables/useGlobalError';
 import { useI18n } from 'vue-i18n';
 
-const { $globalToken } = useNuxtApp()
-const { t } = useI18n();
-const apiId = useGlobalId();
-const permissions = 4 | 2;
-const token = ref($globalToken());
-const { setError } = useGlobalError();
+const { t } = useI18n()
+const permissions = 4 | 2
+const { setError } = useGlobalError()
+const { public: { vkAppId } } = useRuntimeConfig()
 
 const login = () => {
   if (!window.VK) {
@@ -43,7 +40,7 @@ onMounted(() => {
   script.src = 'https://vk.com/js/api/openapi.js';
   script.onload = () => {
     console.log('VK openapi is loaded');
-    VK.init({ apiId: apiId.value });
+    VK.init({ apiId: vkAppId });
   };
   document.head.appendChild(script);
 });
@@ -52,7 +49,7 @@ onMounted(() => {
 <template>
   <div class="flex auth">
     <div
-      v-if="token"
+      v-if="vkAppId"
       class="logout"
     >
       <p>{{ $t('logged') }}</p>

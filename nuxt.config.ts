@@ -5,6 +5,12 @@ import {md2} from "vuetify/blueprints";
 export default defineNuxtConfig({
   ssr: true,
 
+  runtimeConfig: {
+    public: {
+      vkAppId: '6656971'
+    }
+  },
+
   nitro: {
     esbuild: {
       options: {

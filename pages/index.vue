@@ -4,10 +4,9 @@
 import JSZip from "jszip";
 import FileSaver from "file-saver";
 
-const { $globalToken } = useNuxtApp()
-//console.log($globalToken)
+const { $token } = useNuxtApp()
 const url = ref('')
-const token = $globalToken
+const token = ref($token.value?.access_token)
 const results = ref({})
 const { t } = useI18n()
 const download_as = ref('')

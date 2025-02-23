@@ -3,7 +3,7 @@
 import {md2} from "vuetify/blueprints";
 
 export default defineNuxtConfig({
-  ssr: false,
+  ssr: true,
 
   nitro: {
     esbuild: {

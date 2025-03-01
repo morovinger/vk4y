@@ -1,12 +1,11 @@
 
 <script lang="ts" setup>
 
-import JSZip from "jszip";
-import FileSaver from "file-saver";
+import JSZip from "jszip"
+import FileSaver from "file-saver"
 
 const { $token } = useNuxtApp()
 const url = ref('')
-const token = ref($token.value?.access_token)
 const results = ref({})
 const { t } = useI18n()
 const download_as = ref('')
@@ -249,7 +248,7 @@ const selectAllAlbums = () => {
 
 <template>
   <div>
-    <div v-if="token">
+    <div v-if="$token">
       <v-form
         fast-fail
         @submit.prevent

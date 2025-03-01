@@ -8,6 +8,7 @@ const { t } = useI18n()
 const permissions = 4 | 2
 const { setError } = useGlobalError()
 const { public: { vkAppId } } = useRuntimeConfig()
+const { $token } = useNuxtApp()
 
 const login = () => {
   if (!window.VK) {
@@ -49,7 +50,7 @@ onMounted(() => {
 <template>
   <div class="flex auth">
     <div
-      v-if="vkAppId"
+      v-if="$token"
       class="logout"
     >
       <p>{{ $t('logged') }}</p>

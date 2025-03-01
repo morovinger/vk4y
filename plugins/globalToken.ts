@@ -4,18 +4,25 @@ import { useCookie } from '#imports'
 
 export default defineNuxtPlugin(() => {
     const vkAppId = useRuntimeConfig().public.vkAppId
-    const cookie = useCookie(`vk_app_${vkAppId}`) // Remove watch: true
+    const cookie = useCookie(`vk_app_${vkAppId}`, {
+        watch: true,
+    })
 
-    // Parse once during plugin initialization
-    const token = ref(parseCookie(cookie.value))
+    function parseCookie(queryString: string) {
+        const decodedString = decodeURIComponent(queryString)
+        const params = new URLSearchParams(decodedString)
+        const result = {}
+        for (const [key, value] of params.entries()) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            result[key] = value
+        }
+        return result
+    }
 
     return {
-        provide: { token }
+        provide: {
+            token: cookie.value ? parseCookie(cookie.value) : ''
+        }
     }
 })
-
-// Simple non-reactive parser (no need for watch)
-function parseCookie(value?: string) {
-    if (!value) return null
-    return Object.fromEntries(new URLSearchParams(decodeURIComponent(value)))
-}

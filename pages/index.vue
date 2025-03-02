@@ -49,20 +49,42 @@ function check() {
 
   const parsedUrl = new URL(url.value);
   const pathname = parsedUrl.pathname;
+  let album_id: string | undefined;
   const path = pathname.split('_');
-  const album_id = path[1] === "0" ? "-6" : path[1] === "00" ? "-7" : path[1] === "000" ? "saved" : path[1];
-  owner_id.value = pathname.includes('-') ? '-' + pathname.match(/\d+/)[0] : pathname.match(/\d+/)[0];
-  download_as.value = url.value.includes('albums') ? 'albums' : 'photos';
 
-  //if its SAVED album we cant download it, we dont have the permissions
+  // Match URLs like /albums-12345 or /albums12345 (owner's albums list)
+  const albumsMatch = pathname.match(/^\/albums(-?\d+)$/);
+
+  // Match URLs like /album-12345_67890 or /album12345_000 (specific album)
+  const albumMatch = pathname.match(/^\/album(-?\d+)_(saved|0{1,3}|\d+)$/);
+
+  if (albumsMatch) {
+    // Handle album list case
+    owner_id.value = albumsMatch[1];
+    download_as.value = 'albums';
+  } else if (albumMatch) {
+    // Handle specific album case
+    owner_id.value = albumMatch[1];
+    const albumIdPart = albumMatch[2];
+
+    // Convert to numbers where appropriate
+    album_id = albumIdPart === '0' ? -6 :      // Wall photos
+    albumIdPart === '00' ? -7 :     // Profile photos
+    albumIdPart === '000' ? 'saved' : // Saved photos
+    parseInt(albumIdPart, 10);      // Regular numeric IDs
+    download_as.value = 'photos';
+  } else {
+    message.value = t('url_not_valid');
+    return;
+  }
+
+  //if its SAVED album we cant download it, we don't have the permissions
   if (album_id === 'saved'){
     message.value = t('error_saved') + ' https://vk.com/movephotos'
     return
   }
 
-  console.log(owner_id, album_id, path)
-
-  getUserAlbums(owner_id.value, album_id).then((result:any) => {
+  getUserAlbums(owner_id.value, album_id).then((result:never) => {
     console.log(result)
     if (result.items.length > 0) {
       results.value = result
@@ -76,7 +98,7 @@ function check() {
       results.value = {};
       download_as.value = '';
     }
-  }).catch((error: any) => {
+  }).catch((error: never) => {
     console.error(error);
     setError(t('error_fetching'));
     message.value = t('error_find');
@@ -85,20 +107,25 @@ function check() {
   });
 }
 
-function getUserAlbums(owner_id: string, album_id: string|undefined) {
+function getUserAlbums(owner_id: number, album_id?: number) {
   return new Promise((resolve, reject) => {
-
-    VK.Api.call('photos.getAlbums', {
+    const params: Record<string, never> = {
       owner_id: owner_id,
-      album_ids: album_id,
       v: '5.199'
-    }, function(response: { response: { items: unknown; }; }) {
+    };
+
+    // Only add album_ids if it's defined and valid
+    if (typeof album_id === 'number' && !isNaN(album_id)) {
+      params.album_ids = album_id;
+    }
+
+    VK.Api.call('photos.getAlbums', params, (response) => {
       if (response.response) {
-        resolve(response.response)
+        resolve(response.response);
       } else {
-        console.error(response)
-        setError(t('error_fetching'))
-        reject(new Error(t('error_fetching')))
+        console.error('API Error:', response);
+        setError(t('error_fetching'));
+        reject(new Error(t('error_fetching')));
       }
     });
   });
@@ -134,7 +161,7 @@ function getUserPhotos(owner_id: string, album_id: string) {
   }
 
   // Recursive function to fetch all photos
-  function fetchAllPhotos():any {
+  function fetchAllPhotos():never {
     return fetchPhotos().then(items => {
       if (items.length === count) {
         offset += count;
@@ -159,7 +186,7 @@ function getUserPhotos(owner_id: string, album_id: string) {
       });
 }
 
-function extractLargestImages(images: any[]) {
+function extractLargestImages(images: never[]) {
   const sortedSizes = images.sort((a, b) => b.width - a.width);
   const maxSize = sortedSizes[0];
   return maxSize.url;

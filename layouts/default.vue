@@ -1,6 +1,8 @@
 
 <script lang="tsx" setup>
 
+  import Error from "~/components/common/error.vue";
+
   const drawer = ref(false)
   const localePath = useLocalePath()
   const switchLocalePath = useSwitchLocalePath()

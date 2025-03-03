@@ -19,6 +19,17 @@ export default defineNuxtConfig({
     }
   },
 
+  robots: {
+    robotsTxt:false,
+    rules: [
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/api/']
+      }
+    ]
+  },  
+
   devtools: {
     enabled: false
   },

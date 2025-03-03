@@ -14,20 +14,23 @@
 </template>
 
 <script lang="ts" setup>
+import type { PropType } from 'vue';
+import type { Album } from '~/types/global';
+
 const props = defineProps({
   albums: {
-    type: Array,
+    type: Array as PropType<Album[]>,
     default: () => []
   },
   selectedItems: {
-    type: Array,
+    type: Array as PropType<Album[]>,
     default: () => []
   }
 });
 
 defineEmits(['toggle-selection']);
 
-const isSelected = (item) => {
+const isSelected = (item: Album) => {
   return props.selectedItems.some(selected => selected.id === item.id) ? 'tonal' : 'outlined';
 };
 </script>

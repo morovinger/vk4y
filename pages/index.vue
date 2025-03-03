@@ -45,30 +45,31 @@ import FileSaver from "file-saver"
 import { VkPhotoService } from '~/services/vkPhotoService';
 import DownloadActions from "~/components/album/DownloadActions.vue";
 import StatusDisplay from "~/components/common/StatusDisplay.vue";
+import type { Album } from '~/types/global';
 
 const { $token } = useNuxtApp()
 const vkPhotoService = new VkPhotoService();
 
 // State
 const url = ref('')
-const results = ref({})
+const results = ref<{ items?: Album[] }>({})
 const { t } = useI18n()
 const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
-const selectedItems = ref([])
+const selectedItems = ref<{ id: number; title: string }[]>([])
 const owner_id = ref('')
 const progress = ref(0)
 const albumName = ref('')
 
 // URL validation
 const urlRules = [
-  v => !!v || t('url_not_url'),
-  v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
-  v => v.includes('vk.com') || t('url_not_vk'),
-  v => v.includes('album') || t('url_not_album'),
-  v => v.includes('https://') || t('url_not_https'),
+  (v: string) => !!v || t('url_not_url'),
+  (v: string) => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
+  (v: string) => v.includes('vk.com') || t('url_not_vk'),
+  (v: string) => v.includes('album') || t('url_not_album'),
+  (v: string) => v.includes('https://') || t('url_not_https'),
 ];
 
 const isValid = computed(() => {
@@ -153,14 +154,16 @@ function check() {
 async function createAndDownloadZips() {
   try {
     //re-assign results to albums if find by album
-    const albums = download_as.value === 'albums' ? selectedItems.value : results.value.items
+    const albums = download_as.value === 'albums' 
+      ? selectedItems.value 
+      : results.value.items || [];
 
     if (albums.length > 10){
       message.value = t('download_all_too_many')
     }
 
     for (const album of albums) {
-      const photos = await vkPhotoService.getUserPhotos(owner_id.value, album.id);
+      const photos = await vkPhotoService.getUserPhotos(owner_id.value, String(album.id));
 
       if (!photos || photos.length === 0) {
         setError(t('error_no_result'));
@@ -217,7 +220,7 @@ async function createAndDownloadZips() {
   }
 }
 
-const toggleSelection = (item) => {
+const toggleSelection = (item: { id: number; title: string }) => {
   const index = selectedItems.value.findIndex(selected => selected.id === item.id);
   if (index !== -1) {
     selectedItems.value.splice(index, 1);
@@ -230,7 +233,7 @@ const selectAllAlbums = () => {
   if (selectedItems.value.length === results.value.items?.length) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = results.value.items.map(item => ({ id: item.id, title: item.title }));
+    selectedItems.value = results.value.items?.map(item => ({ id: item.id, title: item.title })) || [];
   }
 };
 </script>

@@ -108,9 +108,34 @@ export class VkPhotoService {
         }
 
         try {
-            const sortedSizes = [...images].sort((a, b) => b.width - a.width);
-            const maxSize = sortedSizes[0];
-            return maxSize.url;
+            // Size type priority map (from smallest to largest)
+            const typeWeights: Record<string, number> = {
+                's': 1,  // small
+                'm': 2,  // medium
+                'o': 3,  // 
+                'p': 4,  // 
+                'q': 5,  // 
+                'r': 6,  // 
+                'x': 7,  // extra large
+                'y': 8,  // large
+                'z': 9,  // very large
+                'w': 10  // largest possible
+            };
+            
+            // First try to sort by width if available
+            if (images.some(img => img.width > 0)) {
+                const sortedSizes = [...images].sort((a, b) => b.width - a.width);
+                return sortedSizes[0].url;
+            }
+            
+            // Fallback: sort by type when width is not available or is zero
+            const sortedByType = [...images].sort((a, b) => {
+                const weightA = typeWeights[a.type] || 0;
+                const weightB = typeWeights[b.type] || 0;
+                return weightB - weightA;
+            });
+            
+            return sortedByType[0].url;
         } catch (error) {
             console.error('Error extracting largest image:', error);
             return images[0]?.url || '';

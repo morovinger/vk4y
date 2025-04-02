@@ -188,6 +188,10 @@ async function createAndDownloadZips() {
           const blob = await response.blob();
           zip.file(`image_${index}.png`, blob);
           progress.value = ((index + 1) / photos.length) * 100;
+          
+          // Explicitly free memory
+          URL.revokeObjectURL(largestImage); // If largestImage is an object URL
+          response.body?.cancel(); // Cancel any ongoing fetch streams
         } catch (error) {
           console.error('Error processing photo:', error);
           // Continue with next photo
@@ -197,6 +201,11 @@ async function createAndDownloadZips() {
       zip.generateAsync({type:"blob"})
           .then(function (blob) {
             FileSaver.saveAs(blob, `${album.title}.zip`);
+            // Free memory after saving
+            setTimeout(() => {
+              // Allow time for the save operation to complete
+              URL.revokeObjectURL(URL.createObjectURL(blob)); // Revoke any object URLs
+            }, 1000);
           })
           .catch(function (error) {
             console.error(error);

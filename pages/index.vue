@@ -176,6 +176,7 @@ async function createAndDownloadZips() {
 
       const currentBatchSize = 1500; // Maximum images per zip
       let imageCounter = 0;
+      let totalImageCounter = 0; // Keep track of the total image count across all zips
       let zipPart = 1;
       let currentZip = new JSZip();
 
@@ -201,8 +202,9 @@ async function createAndDownloadZips() {
             }
           }
 
-          currentZip.file(`image_${imageCounter}.${fileExtension}`, blob);
+          currentZip.file(`image_${totalImageCounter}.${fileExtension}`, blob);
           imageCounter++;
+          totalImageCounter++;
           progress.value = ((index + 1) / photos.length) * 100;
 
           // Create a new zip every 1500 images
@@ -227,7 +229,8 @@ async function createAndDownloadZips() {
             // Start a new zip file for the next batch of 1500 images
             currentZip = new JSZip();
             zipPart++;
-            imageCounter = 0;
+            imageCounter = 0; // Reset the batch counter
+            // Note: totalImageCounter is not reset
           }
 
           // Explicitly free memory

@@ -170,11 +170,14 @@ async function createAndDownloadZips() {
         continue;
       }
 
-      const zip = new JSZip();
-
       loading.value = true;
       progress.value = 0;
       albumName.value = album.title;
+
+      let currentBatchSize = 1500; // Maximum images per zip
+      let imageCounter = 0;
+      let zipPart = 1;
+      let currentZip = new JSZip();
 
       for (const [index, photo] of photos.entries()) {
         try {
@@ -198,8 +201,34 @@ async function createAndDownloadZips() {
             }
           }
 
-          zip.file(`image_${index}.${fileExtension}`, blob);
+          currentZip.file(`image_${imageCounter}.${fileExtension}`, blob);
+          imageCounter++;
           progress.value = ((index + 1) / photos.length) * 100;
+
+          // Create a new zip every 1500 images
+          if (imageCounter >= currentBatchSize) {
+            // Generate and download the current batch
+            const zipFileName = photos.length > currentBatchSize 
+              ? `${album.title}_part${zipPart}.zip` 
+              : `${album.title}.zip`;
+              
+            try {
+              const blob = await currentZip.generateAsync({type:"blob"});
+              FileSaver.saveAs(blob, zipFileName);
+              // Free memory after saving
+              setTimeout(() => {
+                URL.revokeObjectURL(URL.createObjectURL(blob));
+              }, 1000);
+            } catch (error) {
+              console.error(error);
+              setError(t('error_creating_zip'));
+            }
+            
+            // Start a new zip file for the next batch of 1500 images
+            currentZip = new JSZip();
+            zipPart++;
+            imageCounter = 0;
+          }
 
           // Explicitly free memory
           URL.revokeObjectURL(largestImage); // If largestImage is an object URL
@@ -210,19 +239,24 @@ async function createAndDownloadZips() {
         }
       }
 
-      zip.generateAsync({type:"blob"})
-          .then(function (blob) {
-            FileSaver.saveAs(blob, `${album.title}.zip`);
-            // Free memory after saving
-            setTimeout(() => {
-              // Allow time for the save operation to complete
-              URL.revokeObjectURL(URL.createObjectURL(blob)); // Revoke any object URLs
-            }, 1000);
-          })
-          .catch(function (error) {
-            console.error(error);
-            setError(t('error_creating_zip'));
-          });
+      // Generate the final zip if there are any remaining images
+      if (imageCounter > 0) {
+        const zipFileName = photos.length > currentBatchSize 
+          ? `${album.title}_part${zipPart}.zip` 
+          : `${album.title}.zip`;
+          
+        try {
+          const blob = await currentZip.generateAsync({type:"blob"});
+          FileSaver.saveAs(blob, zipFileName);
+          // Free memory after saving
+          setTimeout(() => {
+            URL.revokeObjectURL(URL.createObjectURL(blob));
+          }, 1000);
+        } catch (error) {
+          console.error(error);
+          setError(t('error_creating_zip'));
+        }
+      }
     }
 
     message.value = t('done');

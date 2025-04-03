@@ -154,9 +154,9 @@ function check() {
 async function createAndDownloadZips() {
   try {
     //re-assign results to albums if find by album
-    const albums = download_as.value === 'albums' 
-      ? selectedItems.value 
-      : results.value.items || [];
+    const albums = download_as.value === 'albums'
+        ? selectedItems.value
+        : results.value.items || [];
 
     if (albums.length > 10){
       message.value = t('download_all_too_many')
@@ -186,9 +186,21 @@ async function createAndDownloadZips() {
           }
 
           const blob = await response.blob();
-          zip.file(`image_${index}.png`, blob);
+
+          // Determine file extension from Content-Type
+          const contentType = response.headers.get('Content-Type') || 'image/jpeg';
+          let fileExtension = 'jpg';
+
+          if (contentType.includes('/')) {
+            const parts = contentType.split('/');
+            if (parts.length > 1) {
+              fileExtension = parts[1].replace('jpeg', 'jpg');
+            }
+          }
+
+          zip.file(`image_${index}.${fileExtension}`, blob);
           progress.value = ((index + 1) / photos.length) * 100;
-          
+
           // Explicitly free memory
           URL.revokeObjectURL(largestImage); // If largestImage is an object URL
           response.body?.cancel(); // Cancel any ongoing fetch streams

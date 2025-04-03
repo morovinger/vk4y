@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://morovinger.github.io/vk4y/sitemap.xml 

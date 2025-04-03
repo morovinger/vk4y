@@ -1,0 +1,13 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4680C2" />
+      <stop offset="100%" stop-color="#2A5885" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bgGradient)" />
+  <text x="600" y="220" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white" text-anchor="middle">Vk4you</text>
+  <text x="600" y="300" font-family="Arial, sans-serif" font-size="32" fill="rgba(255,255,255,0.9)" text-anchor="middle">Скачайте ваши альбомы с Vk.com бесплатно</text>
+  <text x="600" y="400" font-family="Arial, sans-serif" font-size="28" fill="rgba(255,255,255,0.85)" text-anchor="middle">Приватный сервис без серверной части</text>
+  <text x="600" y="450" font-family="Arial, sans-serif" font-size="28" fill="rgba(255,255,255,0.85)" text-anchor="middle">Работает полностью в браузере</text>
+</svg> 

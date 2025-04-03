@@ -63,6 +63,15 @@ const owner_id = ref('')
 const progress = ref(0)
 const albumName = ref('')
 
+// SEO optimization
+useSeoMeta({
+  title: () => t('title'),
+  ogTitle: () => t('title'),
+  description: () => t('use'),
+  ogDescription: () => t('use'),
+  ogImage: '/vk4y/og-image.svg',
+})
+
 // URL validation
 const urlRules = [
   (v: string) => !!v || t('url_not_url'),

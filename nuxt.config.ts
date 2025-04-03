@@ -20,14 +20,7 @@ export default defineNuxtConfig({
   },
 
   robots: {
-    robotsTxt:false,
-    rules: [
-      {
-        userAgent: '*',
-        allow: '/',
-        disallow: ['/api/']
-      }
-    ]
+    robotsTxt: false,
   },  
 
   devtools: {
@@ -54,6 +47,12 @@ export default defineNuxtConfig({
       { code: 'en', iso: 'en-US' },
       { code: 'ru', iso: 'ru-RU' },
     ],
+    strategy: 'prefix_except_default',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root',
+    }
   },
 
   css: [
@@ -90,12 +89,21 @@ export default defineNuxtConfig({
   site: {
     url: 'https://morovinger.github.io/vk4y/',
     name: 'vk4y',
-    description: 'Скачайте ваши альбомы с Vk.com бесплатно',
+    description: 'Скачайте ваши альбомы с Vk.com бесплатно без сервера. Приватный и безопасный сервис.',
     defaultLocale: 'ru',
   },
 
+  sitemap: {
+    enabled: true,
+  },
+
   ogImage: {
-    enabled: false
+    enabled: true,
+    defaults: {
+      component: 'OgImage',
+      width: 1200,
+      height: 630,
+    }
   },
 
   app: {
@@ -103,6 +111,9 @@ export default defineNuxtConfig({
     buildAssetsDir: 'assets', // don't use "_" at the begining
     "head": {
       "title": "Скачать альбомы с Vk.com бесплатно",
+      "htmlAttrs": {
+        "lang": "ru"
+      },
       "meta": [
         {
           "charset": "utf-8"
@@ -117,11 +128,19 @@ export default defineNuxtConfig({
         },
         {
           "name": "description",
-          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно. Не требует сервера, работает полностью в браузере."
         },
         {
           "name": "keywords",
-          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com"
+          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com, фотографии, загрузить альбом"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://morovinger.github.io/vk4y/"
         },
         {
           "property": "og:title",
@@ -129,7 +148,31 @@ export default defineNuxtConfig({
         },
         {
           "property": "og:description",
-          "content": "Скачайте ваши альбомы с Vk.com бесплатно"
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно без сервера. Приватный и безопасный сервис."
+        },
+        {
+          "property": "og:image",
+          "content": "https://morovinger.github.io/vk4y/og-image.svg"
+        },
+        {
+          "property": "twitter:card",
+          "content": "summary_large_image"
+        },
+        {
+          "property": "twitter:url",
+          "content": "https://morovinger.github.io/vk4y/"
+        },
+        {
+          "property": "twitter:title",
+          "content": "Скачать альбомы с Vk.com бесплатно"
+        },
+        {
+          "property": "twitter:description",
+          "content": "Скачайте ваши альбомы с Vk.com бесплатно без сервера. Приватный и безопасный сервис."
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://morovinger.github.io/vk4y/og-image.svg"
         },
         {
           "name": "google-site-verification",
@@ -139,8 +182,14 @@ export default defineNuxtConfig({
           "name": "yandex-verification",
           "content": "437f6eaf73eaa859"
         }
+      ],
+      "link": [
+        {
+          "rel": "canonical",
+          "href": "https://morovinger.github.io/vk4y/"
+        }
       ]
-      }
+    }
   },
 
   compatibilityDate: "2024-07-25",

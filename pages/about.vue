@@ -1,6 +1,14 @@
-
 <script lang="ts" setup>
   const { t } = useI18n()
+  
+  // SEO optimization for About page
+  useSeoMeta({
+    title: () => t('about'),
+    ogTitle: () => t('about'),
+    description: () => t('about_no_server'),
+    ogDescription: () => t('about_no_server'),
+    ogImage: '/vk4y/og-image.svg',
+  })
 </script>
 
 <template>

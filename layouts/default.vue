@@ -130,6 +130,18 @@
     <v-footer app>
       <v-container>
         <!-- Footer content here -->
+        <v-col class="desc">
+          <v-list>
+            <v-list-item>
+              {{ t('about_no_server') }}
+            </v-list-item>
+            <v-list-item>
+              <b>
+                {{ t('about_about') }}
+              </b>
+            </v-list-item>
+          </v-list>
+        </v-col>
         <v-row justify="center">
           <v-col cols="12">
             {{ t("cookie") }}

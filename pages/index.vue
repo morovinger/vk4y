@@ -33,7 +33,7 @@
               @select-all="selectAllAlbums"
           />
         </v-col>
-      </v-row>
+        </v-row>
     </div>
     <vk-auth />
   </div>
@@ -58,7 +58,7 @@ const download_as = ref('')
 const { setError } = useGlobalError()
 const message = ref('')
 const loading = ref(false)
-const selectedItems = ref<{ id: number; title: string }[]>([])
+const selectedItems = ref<Album[]>([])
 const owner_id = ref('')
 const progress = ref(0)
 const albumName = ref('')
@@ -174,7 +174,7 @@ async function createAndDownloadZips() {
       progress.value = 0;
       albumName.value = album.title;
 
-      let currentBatchSize = 1500; // Maximum images per zip
+      const currentBatchSize = 1500; // Maximum images per zip
       let imageCounter = 0;
       let zipPart = 1;
       let currentZip = new JSZip();
@@ -232,7 +232,7 @@ async function createAndDownloadZips() {
 
           // Explicitly free memory
           URL.revokeObjectURL(largestImage); // If largestImage is an object URL
-          response.body?.cancel(); // Cancel any ongoing fetch streams
+          // We don't cancel response.body as it's already consumed by blob()
         } catch (error) {
           console.error('Error processing photo:', error);
           // Continue with next photo
@@ -275,12 +275,12 @@ async function createAndDownloadZips() {
   }
 }
 
-const toggleSelection = (item: { id: number; title: string }) => {
+const toggleSelection = (item: Album) => {
   const index = selectedItems.value.findIndex(selected => selected.id === item.id);
   if (index !== -1) {
     selectedItems.value.splice(index, 1);
   } else {
-    selectedItems.value.push({ id: item.id, title: item.title });
+    selectedItems.value.push(item);
   }
 };
 
@@ -288,7 +288,7 @@ const selectAllAlbums = () => {
   if (selectedItems.value.length === results.value.items?.length) {
     selectedItems.value = [];
   } else {
-    selectedItems.value = results.value.items?.map(item => ({ id: item.id, title: item.title })) || [];
+    selectedItems.value = results.value.items?.map(item => ({ ...item })) || [];
   }
 };
 </script>

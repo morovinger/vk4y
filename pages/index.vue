@@ -162,6 +162,11 @@ function check() {
 
 async function createAndDownloadZips() {
   try {
+    // Show loading indicator immediately
+    loading.value = true;
+    message.value = t('preparing_download');
+    progress.value = 0;
+    
     //re-assign results to albums if find by album
     const albums = download_as.value === 'albums'
         ? selectedItems.value
@@ -172,6 +177,7 @@ async function createAndDownloadZips() {
     }
 
     for (const album of albums) {
+      message.value = t('fetching_photos_for') + ': ' + album.title;
       const photos = await vkPhotoService.getUserPhotos(owner_id.value, String(album.id));
 
       if (!photos || photos.length === 0) {
@@ -179,9 +185,9 @@ async function createAndDownloadZips() {
         continue;
       }
 
-      loading.value = true;
       progress.value = 0;
       albumName.value = album.title;
+      message.value = t('downloading') + ': ' + album.title;
 
       const currentBatchSize = 1500; // Maximum images per zip
       let imageCounter = 0;

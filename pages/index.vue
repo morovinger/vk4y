@@ -124,7 +124,15 @@ function check() {
         albumIdPart === '00' ? -7 :     // Profile photos
             albumIdPart === '000' ? 'saved' : // Saved photos
                 parseInt(albumIdPart, 10);      // Regular numeric IDs
+    
+    // Make sure we're downloading a specific album, not all albums
     download_as.value = 'photos';
+    
+    // If the owner ID is negative (a group/community) and it's a system album,
+    // we need to ensure we're in 'photos' mode, not 'albums' mode
+    if (parseInt(owner_id.value) < 0 && typeof album_id === 'number' && album_id < 0) {
+      console.log(`System album for group: ${owner_id.value}, album: ${album_id}`);
+    }
   } else {
     message.value = t('url_not_valid');
     return;

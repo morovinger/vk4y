@@ -18,17 +18,43 @@ export class VkPhotoService {
      */
     getUserAlbums(owner_id: string | number, album_id?: string | number): Promise<any> {
         return new Promise((resolve, reject) => {
+            // Handle system albums specially - create a fake album response
+            if (typeof album_id === 'number' && album_id < 0) {
+                // These are system albums like wall photos (-6) or profile photos (-7)
+                // For these, we'll create a fake album entry with appropriate title
+                const albumTitle = album_id === -6 ? this.t('wall_photos') : 
+                                  album_id === -7 ? this.t('profile_photos') : 
+                                  `${this.t('system_album')} ${album_id}`;
+                
+                // Create a fake response with a single album
+                resolve({
+                    count: 1,
+                    items: [{
+                        id: album_id,
+                        owner_id: owner_id,
+                        title: albumTitle,
+                        size: 0, // Size will be updated when we fetch photos
+                        thumb_id: 0,
+                        thumb_src: '',
+                        system: true
+                    }]
+                });
+                return;
+            }
+
             const params: Record<string, any> = {
                 owner_id,
-                v: this.VERSION
+                v: this.VERSION,
+                need_system: 1
             };
 
             // Only add album_ids if it's defined and valid
-            if (typeof album_id === 'number' && !isNaN(album_id)) {
+            if (typeof album_id === 'number' && !isNaN(album_id) && album_id > 0) {
                 params.album_ids = album_id;
             }
 
-            VK.Api.call('photos.getAlbums', params, (response) => {
+            // @ts-ignore
+            VK.Api.call('photos.getAlbums', params, (response: any) => {
                 if (response.response) {
                     resolve(response.response);
                 } else {
@@ -58,7 +84,8 @@ export class VkPhotoService {
           "v": "${this.VERSION}"
         });`;
 
-                VK.Api.call('execute', { code, v: this.VERSION }, (response) => {
+                // @ts-ignore
+                VK.Api.call('execute', { code, v: this.VERSION }, (response: any) => {
                     if (response.response) {
                         resolve(response.response.items);
                     } else {

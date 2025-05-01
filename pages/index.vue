@@ -163,7 +163,26 @@ function check() {
           if (download_as.value === 'albums'){
             message.value = `${t('found')} ${result.items.length} ${t('albums')}`
           } else {
-            message.value = `${t('found')} ${result.items[0]['size']} ${t('photos')} ${t('album')} ${result.items[0]['title']}`
+            // For specific album, fetch photos first to get the actual photo count
+            // and update the title with the first photo (for system albums, etc.)
+            vkPhotoService.getUserPhotos(owner_id.value, String(result.items[0].id))
+              .then(photos => {
+                console.log(`Found ${photos.length} photos in the album`);
+                
+                // Update the album size with the actual photo count
+                result.items[0].size = photos.length;
+                
+                // Update the album title if it's a generic album title (for regular albums)
+                if (result.items[0].title.startsWith(t('album') + ' ') && photos.length > 0 && photos[0].album_title) {
+                  result.items[0].title = photos[0].album_title;
+                }
+                
+                message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0]['title']}`;
+              })
+              .catch(error => {
+                console.error('Error fetching photos for album title:', error);
+                message.value = `${t('found')} ${result.items[0]['size']} ${t('photos')} ${t('album')} ${result.items[0]['title']}`;
+              });
           }
         } else {
           message.value = t('error_find');

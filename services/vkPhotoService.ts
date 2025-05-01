@@ -42,14 +42,37 @@ export class VkPhotoService {
                 return;
             }
 
+            // For specific regular album (positive ID), also create a simplified response
+            // This prevents downloading ALL albums when we just want one specific album
+            if (typeof album_id === 'number' && album_id > 0) {
+                console.log(`Creating simplified response for specific album: ${album_id}`);
+                resolve({
+                    count: 1,
+                    items: [{
+                        id: album_id,
+                        owner_id: owner_id,
+                        title: this.t('album') + ' ' + album_id, // Temporary title, will be updated with photos
+                        size: 0, // Size will be updated when we fetch photos
+                        thumb_id: 0,
+                        thumb_src: '',
+                        system: false
+                    }]
+                });
+                return;
+            }
+
             const params: Record<string, any> = {
                 owner_id,
                 v: this.VERSION,
                 need_system: 1
             };
 
-            // Only add album_ids if it's defined and valid
-            if (typeof album_id === 'number' && !isNaN(album_id) && album_id > 0) {
+            // This block will now only execute when requesting ALL albums
+            // (album_id is undefined or album_id === 'all')
+            if (album_id === 'all') {
+                console.log('Fetching ALL albums');
+            } else if (typeof album_id === 'number' && !isNaN(album_id)) {
+                // If we specifically want one album's details, include it
                 params.album_ids = album_id;
             }
 

@@ -119,14 +119,23 @@ function check() {
     owner_id.value = albumMatch[1];
     const albumIdPart = albumMatch[2];
 
-    // Convert to numbers where appropriate
+    // Convert to numbers where appropriate - only special cases get special treatment
     album_id = albumIdPart === '0' ? -6 :      // Wall photos
         albumIdPart === '00' ? -7 :     // Profile photos
             albumIdPart === '000' ? 'saved' : // Saved photos
                 parseInt(albumIdPart, 10);      // Regular numeric IDs
     
-    // Make sure we're downloading a specific album, not all albums
-    download_as.value = 'photos';
+    // Fix: Ensure we're not misinterpreting regular album IDs
+    // Regular album IDs are typically large numbers like 309556498
+    if (typeof album_id === 'number' && album_id > 0) {
+      // This is a regular album, not a system album
+      download_as.value = 'photos';
+    } else {
+      // This is a system album
+      download_as.value = 'photos';
+      // Log for debugging purposes
+      console.log(`System album detected: ${album_id}`);
+    }
     
     // If the owner ID is negative (a group/community) and it's a system album,
     // we need to ensure we're in 'photos' mode, not 'albums' mode

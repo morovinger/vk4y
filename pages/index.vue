@@ -163,43 +163,20 @@ function check() {
           if (download_as.value === 'albums'){
             message.value = `${t('found')} ${result.items.length} ${t('albums')}`
           } else {
-            // For specific album, fetch photos first to get the actual photo count
-            // and update the title with the first photo (for system albums, etc.)
+            // For specific album, fetch photos to get the count
             vkPhotoService.getUserPhotos(owner_id.value, String(result.items[0].id))
               .then(photos => {
-                console.log(`Found ${photos.length} photos in the album`);
+                console.log(`Found ${photos.length} photos in the album "${result.items[0].title}"`);
                 
                 // Update the album size with the actual photo count
                 result.items[0].size = photos.length;
                 
-                // Update the album title if it's a generic album title
-                // Photos from VK don't have album_title property, so we need to fetch album info
-                if (result.items[0].title.startsWith(t('album') + ' ') && photos.length > 0) {
-                  // Get specific album info to get the correct title
-                  // We'll make a real API call just for the album title
-                  const params = {
-                    owner_id: owner_id.value,
-                    album_ids: result.items[0].id,
-                    v: '5.199'
-                  };
-                  
-                  // @ts-ignore
-                  VK.Api.call('photos.getAlbums', params, (albumResponse: any) => {
-                    if (albumResponse.response && albumResponse.response.items && albumResponse.response.items.length > 0) {
-                      const albumInfo = albumResponse.response.items[0];
-                      result.items[0].title = albumInfo.title;
-                      message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
-                    } else {
-                      message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
-                    }
-                  });
-                } else {
-                  message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
-                }
+                // Display message with the album title (which should already be correct from getUserAlbums)
+                message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
               })
               .catch(error => {
-                console.error('Error fetching photos for album title:', error);
-                message.value = `${t('found')} ${result.items[0]['size']} ${t('photos')} ${t('album')} ${result.items[0]['title']}`;
+                console.error('Error fetching photos:', error);
+                message.value = `${t('found')} ${result.items[0].size || 0} ${t('photos')} ${t('album')} ${result.items[0].title}`;
               });
           }
         } else {

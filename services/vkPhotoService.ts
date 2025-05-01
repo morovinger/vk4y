@@ -14,10 +14,53 @@ export class VkPhotoService {
     private t: any;
 
     /**
+     * Get details for a specific album by ID
+     */
+    getAlbumDetails(owner_id: string | number, album_id: number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            // For system albums, create a fixed response
+            if (album_id < 0) {
+                const albumTitle = album_id === -6 ? this.t('wall_photos') : 
+                                  album_id === -7 ? this.t('profile_photos') : 
+                                  `${this.t('system_album')} ${album_id}`;
+                
+                resolve({
+                    id: album_id,
+                    owner_id: owner_id,
+                    title: albumTitle,
+                    size: 0,
+                    system: true
+                });
+                return;
+            }
+
+            // For regular albums, make a direct API call
+            const params = {
+                owner_id,
+                album_ids: album_id,
+                v: this.VERSION
+            };
+            
+            console.log('Getting album details for:', album_id);
+            
+            // @ts-ignore
+            VK.Api.call('photos.getAlbums', params, (response: any) => {
+                if (response.response && response.response.items && response.response.items.length > 0) {
+                    console.log('Album details response:', response.response.items[0]);
+                    resolve(response.response.items[0]);
+                } else {
+                    console.error('Error getting album details:', response);
+                    reject(new Error('Failed to get album details'));
+                }
+            });
+        });
+    }
+
+    /**
      * Get user albums from VK API
      */
     getUserAlbums(owner_id: string | number, album_id?: string | number): Promise<any> {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             // Handle system albums specially - create a fake album response
             if (typeof album_id === 'number' && album_id < 0) {
                 // These are system albums like wall photos (-6) or profile photos (-7)
@@ -42,22 +85,42 @@ export class VkPhotoService {
                 return;
             }
 
-            // For specific regular album (positive ID), also create a simplified response
-            // This prevents downloading ALL albums when we just want one specific album
+            // For specific regular album (positive ID), get actual album details first
             if (typeof album_id === 'number' && album_id > 0) {
-                console.log(`Creating simplified response for specific album: ${album_id}`);
-                resolve({
-                    count: 1,
-                    items: [{
-                        id: album_id,
-                        owner_id: owner_id,
-                        title: this.t('loading_album_title'), // Use a placeholder that indicates we're loading the title
-                        size: 0, // Size will be updated when we fetch photos
-                        thumb_id: 0,
-                        thumb_src: '',
-                        system: false
-                    }]
-                });
+                try {
+                    console.log(`Getting details for specific album: ${album_id}`);
+                    const albumDetails = await this.getAlbumDetails(owner_id, album_id);
+                    
+                    resolve({
+                        count: 1,
+                        items: [{
+                            ...albumDetails,
+                            // Make sure essential fields exist
+                            id: albumDetails.id || album_id,
+                            owner_id: albumDetails.owner_id || owner_id,
+                            title: albumDetails.title || this.t('album') + ' ' + album_id,
+                            size: albumDetails.size || 0,
+                            thumb_id: albumDetails.thumb_id || 0,
+                            thumb_src: albumDetails.thumb_src || '',
+                            system: false
+                        }]
+                    });
+                } catch (error) {
+                    console.error('Failed to get album details, using fallback:', error);
+                    // Fallback to a simplified response if album details fetch fails
+                    resolve({
+                        count: 1,
+                        items: [{
+                            id: album_id,
+                            owner_id: owner_id,
+                            title: this.t('album') + ' ' + album_id,
+                            size: 0,
+                            thumb_id: 0,
+                            thumb_src: '',
+                            system: false
+                        }]
+                    });
+                }
                 return;
             }
 

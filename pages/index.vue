@@ -118,6 +118,7 @@ function check() {
     // Handle specific album case
     owner_id.value = albumMatch[1];
     const albumIdPart = albumMatch[2];
+    console.log(album_id)
 
     // Convert to numbers where appropriate - only special cases get special treatment
     album_id = albumIdPart === '0' ? -6 :      // Wall photos

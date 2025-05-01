@@ -51,7 +51,7 @@ export class VkPhotoService {
                     items: [{
                         id: album_id,
                         owner_id: owner_id,
-                        title: this.t('album') + ' ' + album_id, // Temporary title, will be updated with photos
+                        title: this.t('loading_album_title'), // Use a placeholder that indicates we're loading the title
                         size: 0, // Size will be updated when we fetch photos
                         thumb_id: 0,
                         thumb_src: '',

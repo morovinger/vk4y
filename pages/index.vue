@@ -172,12 +172,30 @@ function check() {
                 // Update the album size with the actual photo count
                 result.items[0].size = photos.length;
                 
-                // Update the album title if it's a generic album title (for regular albums)
-                if (result.items[0].title.startsWith(t('album') + ' ') && photos.length > 0 && photos[0].album_title) {
-                  result.items[0].title = photos[0].album_title;
+                // Update the album title if it's a generic album title
+                // Photos from VK don't have album_title property, so we need to fetch album info
+                if (result.items[0].title.startsWith(t('album') + ' ') && photos.length > 0) {
+                  // Get specific album info to get the correct title
+                  // We'll make a real API call just for the album title
+                  const params = {
+                    owner_id: owner_id.value,
+                    album_ids: result.items[0].id,
+                    v: '5.199'
+                  };
+                  
+                  // @ts-ignore
+                  VK.Api.call('photos.getAlbums', params, (albumResponse: any) => {
+                    if (albumResponse.response && albumResponse.response.items && albumResponse.response.items.length > 0) {
+                      const albumInfo = albumResponse.response.items[0];
+                      result.items[0].title = albumInfo.title;
+                      message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
+                    } else {
+                      message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
+                    }
+                  });
+                } else {
+                  message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0].title}`;
                 }
-                
-                message.value = `${t('found')} ${photos.length} ${t('photos')} ${t('album')} ${result.items[0]['title']}`;
               })
               .catch(error => {
                 console.error('Error fetching photos for album title:', error);

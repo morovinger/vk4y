@@ -13,6 +13,14 @@
           :album-name="albumName"
           :progress="progress"
       />
+      
+      <!-- Metadata Settings Component -->
+      <MetadataSettings
+          v-if="results.items && results.items.length > 0"
+          v-model:enabled="metadataEnabled"
+          v-model:options="metadataOptions"
+      />
+      
       <v-row align="start">
         <v-col md="8">
           <AlbumSelector
@@ -45,6 +53,7 @@ import FileSaver from "file-saver"
 import { VkPhotoService } from '~/services/vkPhotoService';
 import DownloadActions from "~/components/album/DownloadActions.vue";
 import StatusDisplay from "~/components/common/StatusDisplay.vue";
+import MetadataSettings from "~/components/album/MetadataSettings.vue";
 import type { Album } from '~/types/global';
 
 const { $token } = useNuxtApp()
@@ -62,6 +71,15 @@ const selectedItems = ref<Album[]>([])
 const owner_id = ref('')
 const progress = ref(0)
 const albumName = ref('')
+
+// Metadata settings
+const metadataEnabled = ref(false)
+const metadataOptions = ref({
+  likes: true,
+  comments: true,
+  tags: true,
+  dateInfo: true
+})
 
 // SEO optimization
 useSeoMeta({
@@ -252,6 +270,19 @@ async function createAndDownloadZips() {
           }
 
           currentZip.file(`image_${totalImageCounter}.${fileExtension}`, blob);
+          
+          // Add metadata if enabled
+          if (metadataEnabled.value) {
+            try {
+              const metadata = await vkPhotoService.getPhotoMetadata(owner_id.value, photo.id, photo);
+              const metadataJson = vkPhotoService.createMetadataJson(metadata);
+              currentZip.file(`image_${totalImageCounter}_metadata.json`, metadataJson);
+            } catch (error) {
+              console.error('Error getting metadata for photo:', photo.id, error);
+              // Continue without metadata for this photo
+            }
+          }
+          
           imageCounter++;
           totalImageCounter++;
           progress.value = ((index + 1) / photos.length) * 100;

@@ -51,3 +51,43 @@ export interface VkApiResponse<T> {
         error_msg: string;
     };
 }
+
+export interface PhotoLikes {
+    count: number;
+    users: number[];
+}
+
+export interface PhotoComment {
+    id: number;
+    from_id: number;
+    date: string;
+    text: string;
+    likes: { count: number };
+}
+
+export interface PhotoTag {
+    user_id: number;
+    tagged_name: string;
+    x: number;
+    y: number;
+    x2: number;
+    y2: number;
+}
+
+export interface PhotoMetadata {
+    photo_id: string | number;
+    owner_id: string | number;
+    date: string;
+    text: string;
+    likes: PhotoLikes;
+    comments: {
+        count: number;
+        items: PhotoComment[];
+    };
+    tags: PhotoTag[];
+    album_id?: number;
+    width?: number;
+    height?: number;
+    sizes?: PhotoSize[];
+    error?: string;
+}

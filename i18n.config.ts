@@ -51,6 +51,13 @@ export default defineI18nConfig(() => ({
             about_no_server: 'No files or any other personal data is sends into server. All images and cookies directly process ONlY in your browser',
             about_about:'Its free and open-source tool. Advises and bug-reports are appreciated and can be send at morovinger gmail.com or directly at github project',
             about_move_photo:'To download albums with 2k+ images its better to split it up first. For it you can use',
+            metadata_settings: 'Metadata Settings',
+            include_metadata: 'Include metadata with photos',
+            include_likes: 'Include likes information',
+            include_comments: 'Include comments',
+            include_tags: 'Include photo tags',
+            include_date_info: 'Include date information',
+            metadata_warning: 'Including metadata will significantly increase download time and archive size. Metadata will be saved as JSON files alongside photos.',
         },
         ru: {
             index: "Главная",
@@ -101,6 +108,13 @@ export default defineI18nConfig(() => ({
             about_no_server: 'Никакие файлы либо другие данные НЕ отправляются на сервер. Все картинки и куки обрабатываются прямо в вашем браузере',
             about_about:'Это бесплатная программа с открытым исходным кодом. Отзывы и баги можно отправить на morovinger gmail.com или на гит-хаб проекта',
             about_move_photo:'Чтобы сказать альбомы с 2к+ фото их лучше сначала разделить этой программой',
+            metadata_settings: 'Настройки метаданных',
+            include_metadata: 'Включить метаданные к фотографиям',
+            include_likes: 'Включить информацию о лайках',
+            include_comments: 'Включить комментарии',
+            include_tags: 'Включить теги на фотографиях',
+            include_date_info: 'Включить информацию о дате',
+            metadata_warning: 'Включение метаданных значительно увеличит время скачивания и размер архива. Метаданные будут сохранены как JSON файлы рядом с фотографиями.',
         }
     }
 }))

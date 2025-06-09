@@ -7,7 +7,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      vkAppId: '6656971'
+      vkAppId: process.env.NUXT_PUBLIC_VK_APP_ID || '6656971'
     }
   },
 

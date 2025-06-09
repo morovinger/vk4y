@@ -254,4 +254,123 @@ export class VkPhotoService {
             return images[0]?.url || '';
         }
     }
+
+    /**
+     * Get likes information for a photo
+     */
+    getPhotoLikes(owner_id: string | number, photo_id: string | number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const params = {
+                type: 'photo',
+                owner_id: owner_id,
+                item_id: photo_id,
+                v: this.VERSION
+            };
+
+            // @ts-ignore
+            VK.Api.call('likes.getList', params, (response: any) => {
+                if (response.response) {
+                    resolve({
+                        count: response.response.count,
+                        users: response.response.items || []
+                    });
+                } else {
+                    console.error('Error getting likes:', response);
+                    resolve({ count: 0, users: [] });
+                }
+            });
+        });
+    }
+
+    /**
+     * Get comments for a photo
+     */
+    getPhotoComments(owner_id: string | number, photo_id: string | number): Promise<any> {
+        return new Promise((resolve, reject) => {
+            const params = {
+                owner_id: owner_id,
+                photo_id: photo_id,
+                count: 100, // Maximum comments to fetch
+                sort: 'desc',
+                v: this.VERSION
+            };
+
+            // @ts-ignore
+            VK.Api.call('photos.getComments', params, (response: any) => {
+                if (response.response) {
+                    resolve({
+                        count: response.response.count,
+                        items: response.response.items || []
+                    });
+                } else {
+                    console.error('Error getting comments:', response);
+                    resolve({ count: 0, items: [] });
+                }
+            });
+        });
+    }
+
+    /**
+     * Get complete metadata for a photo including likes and comments
+     */
+    async getPhotoMetadata(owner_id: string | number, photo_id: string | number, photo: any): Promise<any> {
+        try {
+            const [likes, comments] = await Promise.all([
+                this.getPhotoLikes(owner_id, photo_id),
+                this.getPhotoComments(owner_id, photo_id)
+            ]);
+
+            return {
+                photo_id: photo_id,
+                owner_id: owner_id,
+                date: new Date(photo.date * 1000).toISOString(),
+                text: photo.text || '',
+                likes: {
+                    count: likes.count,
+                    users: likes.users
+                },
+                comments: {
+                    count: comments.count,
+                    items: comments.items.map((comment: any) => ({
+                        id: comment.id,
+                        from_id: comment.from_id,
+                        date: new Date(comment.date * 1000).toISOString(),
+                        text: comment.text,
+                        likes: comment.likes || { count: 0 }
+                    }))
+                },
+                tags: photo.tags?.map((tag: any) => ({
+                    user_id: tag.user_id,
+                    tagged_name: tag.tagged_name,
+                    x: tag.x,
+                    y: tag.y,
+                    x2: tag.x2,
+                    y2: tag.y2
+                })) || [],
+                album_id: photo.album_id,
+                width: photo.width,
+                height: photo.height,
+                sizes: photo.sizes
+            };
+        } catch (error) {
+            console.error('Error getting photo metadata:', error);
+            return {
+                photo_id: photo_id,
+                owner_id: owner_id,
+                date: photo.date ? new Date(photo.date * 1000).toISOString() : new Date().toISOString(),
+                text: photo.text || '',
+                likes: { count: 0, users: [] },
+                comments: { count: 0, items: [] },
+                tags: [],
+                error: 'Failed to fetch complete metadata'
+            };
+        }
+    }
+
+    /**
+     * Create a metadata JSON string for a photo
+     */
+    createMetadataJson(metadata: any): string {
+        return JSON.stringify(metadata, null, 2);
+    }
 }

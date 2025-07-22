@@ -119,6 +119,9 @@ export default defineNuxtConfig({
           "charset": "utf-8"
         },
         {
+          "yandex-verification": "28b4b35a5f077347"
+        },
+        {
           "name": "viewport",
           "content": "width=device-width, initial-scale=1"
         },

@@ -8,6 +8,8 @@ Nuxt3 + Vuetify3
 
 https://morovinger.github.io/vk4y/
 
+100% functionality confirmed only for Chrome browser \ 100% работоспособность подтверждена только для Хром браузера
+
 ## Локальное развертывание
 
 ### Создание VK приложения

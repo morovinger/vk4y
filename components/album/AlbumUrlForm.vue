@@ -5,10 +5,10 @@
       <v-col cols="12" md="8">
         <v-text-field
             :model-value="modelValue"
-            @update:model-value="$emit('update:modelValue', $event)"
             :rules="urlRules"
             label="URL"
             required
+            @update:model-value="$emit('update:modelValue', $event)"
         />
       </v-col>
       <v-col cols="4" md="2">

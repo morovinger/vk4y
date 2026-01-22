@@ -49,7 +49,6 @@
 
 <script lang="ts" setup>
 import JSZip from "jszip"
-import FileSaver from "file-saver"
 import { VkPhotoService } from '~/services/vkPhotoService';
 import DownloadActions from "~/components/album/DownloadActions.vue";
 import StatusDisplay from "~/components/common/StatusDisplay.vue";
@@ -296,26 +295,26 @@ async function createAndDownloadZips() {
               
             try {
               const blob = await currentZip.generateAsync({type:"blob"});
-              FileSaver.saveAs(blob, zipFileName);
-              // Free memory after saving
+              const blobUrl = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = blobUrl;
+              link.download = zipFileName;
+              link.click();
+              // Free memory after download starts
               setTimeout(() => {
-                URL.revokeObjectURL(URL.createObjectURL(blob));
+                URL.revokeObjectURL(blobUrl);
               }, 1000);
             } catch (error) {
               console.error(error);
               setError(t('error_creating_zip'));
             }
-            
+
             // Start a new zip file for the next batch of 1500 images
             currentZip = new JSZip();
             zipPart++;
             imageCounter = 0; // Reset the batch counter
             // Note: totalImageCounter is not reset
           }
-
-          // Explicitly free memory
-          URL.revokeObjectURL(largestImage); // If largestImage is an object URL
-          // We don't cancel response.body as it's already consumed by blob()
         } catch (error) {
           console.error('Error processing photo:', error);
           // Continue with next photo
@@ -324,16 +323,20 @@ async function createAndDownloadZips() {
 
       // Generate the final zip if there are any remaining images
       if (imageCounter > 0) {
-        const zipFileName = photos.length > currentBatchSize 
-          ? `${album.title}_part${zipPart}.zip` 
+        const zipFileName = photos.length > currentBatchSize
+          ? `${album.title}_part${zipPart}.zip`
           : `${album.title}.zip`;
-          
+
         try {
           const blob = await currentZip.generateAsync({type:"blob"});
-          FileSaver.saveAs(blob, zipFileName);
-          // Free memory after saving
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = zipFileName;
+          link.click();
+          // Free memory after download starts
           setTimeout(() => {
-            URL.revokeObjectURL(URL.createObjectURL(blob));
+            URL.revokeObjectURL(blobUrl);
           }, 1000);
         } catch (error) {
           console.error(error);

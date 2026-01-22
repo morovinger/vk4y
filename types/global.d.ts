@@ -1,13 +1,68 @@
 // types/global.d.ts
 
+// VK OpenAPI Type Declarations
+interface VKAuthSession {
+    mid: string;
+    sid: string;
+    secret: string;
+    sig: string;
+    expire: number;
+    user: {
+        id: string;
+        first_name: string;
+        last_name: string;
+        photo: string;
+        photo_rec: string;
+        href: string;
+    };
+}
+
+interface VKAuthResponse {
+    session: VKAuthSession | null;
+    status: 'connected' | 'not_authorized' | 'unknown';
+}
+
+interface VKApiCallback<T = unknown> {
+    (response: { response?: T; error?: VKApiError }): void;
+}
+
+interface VKApiError {
+    error_code: number;
+    error_msg: string;
+    request_params?: Array<{ key: string; value: string }>;
+}
+
+interface VKApi {
+    call<T = unknown>(method: string, params: Record<string, unknown>, callback: VKApiCallback<T>): void;
+}
+
+interface VKAuth {
+    login(callback: (response: VKAuthResponse) => void, permissions?: number): void;
+    logout(callback: () => void): void;
+    getLoginStatus(callback: (response: VKAuthResponse) => void): void;
+    getSession(): VKAuthSession | null;
+}
+
+interface VKOpenAPI {
+    init(options: { apiId: string | number }): void;
+    Api: VKApi;
+    Auth: VKAuth;
+}
+
+declare const VK: VKOpenAPI;
+
 declare global {
     interface Window {
-        VK: any;
+        VK: VKOpenAPI;
     }
 }
 
 export interface AlbumPrivacySettings {
-    // Define privacy settings structure here
+    category: number;
+    owners?: {
+        allowed?: number[];
+        excluded?: number[];
+    };
 }
 
 export interface Album {
@@ -34,7 +89,9 @@ export interface Photo {
     sizes: PhotoSize[];
     text: string;
     date: number;
-    [key: string]: any;
+    width?: number;
+    height?: number;
+    tags?: PhotoTag[];
 }
 
 export interface PhotoSize {

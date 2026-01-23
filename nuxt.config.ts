@@ -133,10 +133,12 @@ export default defineNuxtConfig({
           "charset": "utf-8"
         },
         {
-          "yandex-verification": "ceb5afb38a9e216a"
+          "name": "yandex-verification",
+          "content": "ceb5afb38a9e216a"
         },
         {
-          "google-site-verification": "yyT6Uc8VW-q9yeeF7gIVozPqFctscH-WGKU1TfGrjLY"
+          "name": "google-site-verification",
+          "content": "yyT6Uc8VW-q9yeeF7gIVozPqFctscH-WGKU1TfGrjLY"
         },
         {
           "name": "viewport",

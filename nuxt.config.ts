@@ -169,7 +169,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "og:image",
-          "content": "https://vk4y.ruog-image.svg"
+          "content": "https://vk4y.ru/og-image.svg"
         },
         {
           "property": "twitter:card",
@@ -189,7 +189,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "twitter:image",
-          "content": "https://vk4y.ruog-image.svg"
+          "content": "https://vk4y.ru/og-image.svg"
         },
         {
           "name": "google-site-verification",

@@ -136,6 +136,9 @@ export default defineNuxtConfig({
           "yandex-verification": "ceb5afb38a9e216a"
         },
         {
+          "google-site-verification": "yyT6Uc8VW-q9yeeF7gIVozPqFctscH-WGKU1TfGrjLY"
+        },
+        {
           "name": "viewport",
           "content": "width=device-width, initial-scale=1"
         },

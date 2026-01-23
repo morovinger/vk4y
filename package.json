@@ -28,6 +28,7 @@
   "dependencies": {
     "@vueuse/integrations": "^13.0.0",
     "@vueuse/nuxt": "^13.0.0",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "yandex-metrika-module-nuxt3": "^1.5.3"
   }
 }

@@ -7,7 +7,8 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      vkAppId: process.env.NUXT_PUBLIC_VK_APP_ID || '6656971'
+      vkAppId: process.env.NUXT_PUBLIC_VK_APP_ID || '6656971',
+      yandexMetrikaId: process.env.NUXT_PUBLIC_YANDEX_METRIKA_ID || '106410313'
     }
   },
 
@@ -32,8 +33,21 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxtjs/i18n',
     'nuxt-icon',
-    "@nuxtjs/seo"
+    "@nuxtjs/seo",
+    'yandex-metrika-module-nuxt3'
   ],
+
+  yandexMetrika: {
+    id: process.env.NUXT_PUBLIC_YANDEX_METRIKA_ID,
+    enabled: !!process.env.NUXT_PUBLIC_YANDEX_METRIKA_ID,
+    options: {
+      clickmap: true,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: true,
+      trackHash: true
+    }
+  },
 
   eslint: {
     // options here
@@ -41,7 +55,7 @@ export default defineNuxtConfig({
 
   i18n: {
     vueI18n: '../i18n.config.ts',
-    baseUrl: 'https://morovinger.github.io/',
+    baseUrl: 'https://vk4y.ru',
     defaultLocale: 'ru',
     locales: [
       { code: 'en', iso: 'en-US' },
@@ -87,7 +101,7 @@ export default defineNuxtConfig({
   },
 
   site: {
-    url: 'https://morovinger.github.io/vk4y/',
+    url: 'https://vk4y.ru',
     name: 'vk4y',
     description: 'Скачайте ваши альбомы с Vk.com бесплатно без сервера. Приватный и безопасный сервис.',
     defaultLocale: 'ru',
@@ -107,7 +121,7 @@ export default defineNuxtConfig({
   },
 
   app: {
-    baseURL: '/vk4y/', // baseURL: '/<repository>/'
+    baseURL: '/', // Custom domain, no subdirectory needed
     buildAssetsDir: 'assets', // don't use "_" at the begining
     "head": {
       "title": "Скачать альбомы с Vk.com бесплатно",
@@ -143,7 +157,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "og:url",
-          "content": "https://morovinger.github.io/vk4y/"
+          "content": "https://vk4y.ru"
         },
         {
           "property": "og:title",
@@ -155,7 +169,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "og:image",
-          "content": "https://morovinger.github.io/vk4y/og-image.svg"
+          "content": "https://vk4y.ruog-image.svg"
         },
         {
           "property": "twitter:card",
@@ -163,7 +177,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "twitter:url",
-          "content": "https://morovinger.github.io/vk4y/"
+          "content": "https://vk4y.ru"
         },
         {
           "property": "twitter:title",
@@ -175,7 +189,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "twitter:image",
-          "content": "https://morovinger.github.io/vk4y/og-image.svg"
+          "content": "https://vk4y.ruog-image.svg"
         },
         {
           "name": "google-site-verification",
@@ -189,7 +203,7 @@ export default defineNuxtConfig({
       "link": [
         {
           "rel": "canonical",
-          "href": "https://morovinger.github.io/vk4y/"
+          "href": "https://vk4y.ru"
         }
       ]
     }

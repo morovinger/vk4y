@@ -35,6 +35,7 @@ jobs:
         run: npm run generate
         env:
           NUXT_PUBLIC_VK_APP_ID: ${{ vars.VK_APP_ID || '6656971' }}
+          NUXT_PUBLIC_YANDEX_METRIKA_ID: ${{ vars.YANDEX_METRIKA_ID }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

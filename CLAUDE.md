@@ -4,7 +4,7 @@
 
 **VK4Y** is a free, browser-based photo downloader for VK.com (VKontakte). The application runs 100% client-side with no server processing, ensuring user privacy. Users can authenticate with VK, select albums, and download photos as ZIP files.
 
-**Live Site:** https://morovinger.github.io/vk4y/
+**Live Site:** https://vk4y.ru
 
 ## Tech Stack
 
@@ -69,8 +69,10 @@ npm run deploy     # Deploy to GitHub Pages
 ## Environment Variables
 
 Create `.env` file based on `.env.example`:
-```
+
+```bash
 NUXT_PUBLIC_VK_APP_ID=6656971
+NUXT_PUBLIC_YANDEX_METRIKA_ID=your_metrika_counter_id
 ```
 
 ## VK API Integration
@@ -93,9 +95,10 @@ NUXT_PUBLIC_VK_APP_ID=6656971
 ## Architecture Notes
 
 - **ZIP batching:** Albums with 1500+ photos split into multiple ZIPs
-- **Memory management:** Uses `URL.revokeObjectURL()` for cleanup
+- **Memory management:** Proper blob URL handling with cleanup
 - **No server-side:** All processing happens in browser
 - **Progress tracking:** Real-time percentage during download
+- **Analytics:** Yandex Metrika integration (optional, configurable via env var)
 
 ## Coding Conventions
 
@@ -114,7 +117,9 @@ Currently no test suite. When adding tests:
 
 ## Deployment
 
-GitHub Pages deployment via `gh-pages` package:
-- Base URL: `/vk4y/`
+GitHub Pages deployment via GitHub Actions:
+- Custom domain: `vk4y.ru`
+- Base URL: `/` (root, not subdirectory)
 - Assets directory: `assets` (not `_assets` for GH Pages compatibility)
-- Run `npm run generate && npm run deploy`
+- Automatic deployment on push to `main` branch
+- Yandex Metrika integration for analytics

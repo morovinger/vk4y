@@ -133,7 +133,7 @@ export default defineNuxtConfig({
           "charset": "utf-8"
         },
         {
-          "yandex-verification": "28b4b35a5f077347"
+          "yandex-verification": "ceb5afb38a9e216a"
         },
         {
           "name": "viewport",

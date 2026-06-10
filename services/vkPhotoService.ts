@@ -187,7 +187,7 @@ export class VkPhotoService {
                     if (response.response) {
                         resolve(response.response.items);
                     } else {
-                        reject(new Error('Error fetching photos'));
+                        reject(new Error(response.error?.error_msg || 'Error fetching photos'));
                     }
                 });
             });
@@ -204,13 +204,8 @@ export class VkPhotoService {
             return items;
         };
 
-        // Start fetching photos and return the promise
-        return fetchAllPhotos()
-            .then(allPhotos => allPhotos.length ? allPhotos : [])
-            .catch(() => {
-                this.setError(this.t('error_fetching'));
-                return [];
-            });
+        // Rejects on API failure so callers can tell an error from an empty album
+        return fetchAllPhotos();
     }
 
     /**

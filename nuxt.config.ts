@@ -62,11 +62,10 @@ export default defineNuxtConfig({
       { code: 'ru', iso: 'ru-RU' },
     ],
     strategy: 'prefix_except_default',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root',
-    }
+    // Disabled to keep "/" a stable 200 serving the default (ru) locale.
+    // Browser-language auto-redirect bounced "/" -> "/en" for English clients
+    // (incl. Googlebot), which Search Console flagged as "Page with redirect".
+    detectBrowserLanguage: false,
   },
 
   css: [

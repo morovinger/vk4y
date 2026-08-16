@@ -110,6 +110,10 @@ export default defineNuxtConfig({
 
   sitemap: {
     enabled: true,
+    // Single /sitemap.xml file: the default per-locale multi-sitemap emits an
+    // HTML redirect stub at /sitemap.xml, which static GH Pages hosting serves
+    // as text/html and crawlers reject.
+    sitemaps: false,
   },
 
   // Social previews use the static /og-image.png (SVG is not supported by
@@ -142,16 +146,8 @@ export default defineNuxtConfig({
           "content": "width=device-width, initial-scale=1"
         },
         {
-          "name": "title",
-          "content": "Скачать альбомы с Vk.com бесплатно"
-        },
-        {
           "name": "description",
           "content": "Скачайте ваши альбомы с Vk.com бесплатно. Не требует сервера, работает полностью в браузере."
-        },
-        {
-          "name": "keywords",
-          "content": "Скачать альбом, ВК, Вконтакте, VK, VK.com, фотографии, загрузить альбом"
         },
         {
           "property": "og:type",

@@ -90,6 +90,30 @@ useSeoMeta({
   ogImage: 'https://vk4y.ru/og-image.png',
 })
 
+// WebApplication rich-snippet markup, rebuilt per locale
+useHead(() => ({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        name: 'Vk4y',
+        url: 'https://vk4y.ru',
+        description: t('use'),
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Any',
+        browserRequirements: 'Requires JavaScript',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'RUB',
+        },
+      }),
+    },
+  ],
+}))
+
 // URL validation
 const urlRules = [
   (v: string) => !!v || t('url_not_url'),

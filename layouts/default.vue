@@ -10,6 +10,14 @@
   const { locale,t } = useI18n()
   const theme = useTheme()
 
+  // Per-page html lang/dir, hreflang alternates, canonical and og:locale
+  const i18nHead = useLocaleHead()
+  useHead(() => ({
+    htmlAttrs: i18nHead.value.htmlAttrs,
+    link: i18nHead.value.link,
+    meta: i18nHead.value.meta,
+  }))
+
   function toggleTheme () {
     theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
   }
@@ -22,24 +30,30 @@
 
 <template>
   <VApp>
-    <v-navigation-drawer
-      v-model="drawer"
-      :disable-resize-watcher="false"
-      app
-    >
-      <v-list>
-        <v-list-subheader>
-          Vk4you
-        </v-list-subheader>
-        <v-list-item>
-          <NuxtLink :to="localePath(getInactiveRoute())">
-            <v-btn>
-              {{ t(getInactiveRoute()) }}
-            </v-btn>
-          </NuxtLink>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+    <!-- Client-only: during prerender Vuetify assumes a desktop viewport and
+         renders the drawer expanded; the same links exist in the app bar. -->
+    <ClientOnly>
+      <!-- Resize watcher must stay off: with SSR Vuetify boots with a 0-width
+           viewport and the mobile->desktop switch would force the drawer open. -->
+      <v-navigation-drawer
+        v-model="drawer"
+        disable-resize-watcher
+        app
+      >
+        <v-list>
+          <v-list-subheader>
+            Vk4you
+          </v-list-subheader>
+          <v-list-item>
+            <NuxtLink :to="localePath(getInactiveRoute())">
+              <v-btn>
+                {{ t(getInactiveRoute()) }}
+              </v-btn>
+            </NuxtLink>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    </ClientOnly>
 
     <v-app-bar app>
       <v-container>

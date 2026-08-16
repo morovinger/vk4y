@@ -3,7 +3,9 @@
 import {md2} from "vuetify/blueprints";
 
 export default defineNuxtConfig({
-  ssr: false,
+  // SSR is used only for static prerendering (nuxt generate) so crawlers get
+  // full HTML; all VK API work still happens in the browser (see <ClientOnly>).
+  ssr: true,
 
   runtimeConfig: {
     public: {
@@ -58,8 +60,8 @@ export default defineNuxtConfig({
     baseUrl: 'https://vk4y.ru',
     defaultLocale: 'ru',
     locales: [
-      { code: 'en', iso: 'en-US' },
-      { code: 'ru', iso: 'ru-RU' },
+      { code: 'en', language: 'en-US' },
+      { code: 'ru', language: 'ru-RU' },
     ],
     strategy: 'prefix_except_default',
     // Disabled to keep "/" a stable 200 serving the default (ru) locale.
@@ -110,13 +112,10 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
+  // Social previews use the static /og-image.png (SVG is not supported by
+  // VK/Telegram/Facebook scrapers), so runtime og-image generation is off.
   ogImage: {
-    enabled: true,
-    defaults: {
-      component: 'OgImage',
-      width: 1200,
-      height: 630,
-    }
+    enabled: false,
   },
 
   app: {
@@ -124,9 +123,8 @@ export default defineNuxtConfig({
     buildAssetsDir: 'assets', // don't use "_" at the begining
     "head": {
       "title": "Скачать альбомы с Vk.com бесплатно",
-      "htmlAttrs": {
-        "lang": "ru"
-      },
+      // html lang, canonical, og:url and hreflang are set per page by
+      // useLocaleHead() in layouts/default.vue — do not hardcode them here.
       "meta": [
         {
           "charset": "utf-8"
@@ -160,10 +158,6 @@ export default defineNuxtConfig({
           "content": "website"
         },
         {
-          "property": "og:url",
-          "content": "https://vk4y.ru"
-        },
-        {
           "property": "og:title",
           "content": "Скачать альбомы с Vk.com"
         },
@@ -173,15 +167,11 @@ export default defineNuxtConfig({
         },
         {
           "property": "og:image",
-          "content": "https://vk4y.ru/og-image.svg"
+          "content": "https://vk4y.ru/og-image.png"
         },
         {
           "property": "twitter:card",
           "content": "summary_large_image"
-        },
-        {
-          "property": "twitter:url",
-          "content": "https://vk4y.ru"
         },
         {
           "property": "twitter:title",
@@ -193,7 +183,7 @@ export default defineNuxtConfig({
         },
         {
           "property": "twitter:image",
-          "content": "https://vk4y.ru/og-image.svg"
+          "content": "https://vk4y.ru/og-image.png"
         },
         {
           "name": "google-site-verification",
@@ -202,12 +192,6 @@ export default defineNuxtConfig({
         {
           "name": "yandex-verification",
           "content": "437f6eaf73eaa859"
-        }
-      ],
-      "link": [
-        {
-          "rel": "canonical",
-          "href": "https://vk4y.ru"
         }
       ]
     }

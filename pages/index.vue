@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="$token">
+    <!-- Auth state comes from a cookie the prerendered HTML can't know about,
+         so everything token-dependent renders client-side only. -->
+    <ClientOnly>
+      <div v-if="$token">
       <AlbumUrlForm
           v-model="url"
           :is-valid="isValid"
@@ -42,8 +45,9 @@
           />
         </v-col>
         </v-row>
-    </div>
-    <vk-auth />
+      </div>
+      <vk-auth />
+    </ClientOnly>
   </div>
 </template>
 
@@ -83,7 +87,7 @@ useSeoMeta({
   ogTitle: () => t('title'),
   description: () => t('use'),
   ogDescription: () => t('use'),
-  ogImage: '/vk4y/og-image.svg',
+  ogImage: 'https://vk4y.ru/og-image.png',
 })
 
 // URL validation

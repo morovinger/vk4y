@@ -7,7 +7,7 @@
     ogTitle: () => t('about'),
     description: () => t('about_no_server'),
     ogDescription: () => t('about_no_server'),
-    ogImage: '/vk4y/og-image.svg',
+    ogImage: 'https://vk4y.ru/og-image.png',
   })
 </script>
 

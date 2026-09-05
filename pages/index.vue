@@ -104,6 +104,16 @@ useHead(() => ({
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Any',
         browserRequirements: 'Requires JavaScript',
+        isAccessibleForFree: true,
+        inLanguage: ['ru', 'en'],
+        sameAs: 'https://github.com/morovinger/vk4y',
+        featureList: [
+          'Download VK.com photo albums as ZIP archives',
+          'Fully client-side: photos never leave the browser',
+          'Downloads private albums, wall and profile photos',
+          'Large albums split into ZIPs of up to 1500 photos',
+          'Optional export of likes, comments, tags and dates',
+        ],
         offers: {
           '@type': 'Offer',
           price: '0',

@@ -82,6 +82,8 @@
             <NuxtLink
               v-if="locale === 'ru'"
               :to="switchLocalePath('en')"
+              aria-label="English"
+              hreflang="en"
             >
               <v-btn>
                 <Icon
@@ -93,6 +95,8 @@
             <NuxtLink
               v-else
               :to="switchLocalePath('ru')"
+              aria-label="Русский"
+              hreflang="ru"
             >
               <v-btn>
                 <Icon

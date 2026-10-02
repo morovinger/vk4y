@@ -48,6 +48,7 @@
       </div>
       <vk-auth />
     </ClientOnly>
+    <HomeGuide />
   </div>
 </template>
 
@@ -57,6 +58,7 @@ import { parseVkAlbumUrl } from '~/utils/vkAlbumUrl';
 import DownloadActions from "~/components/album/DownloadActions.vue";
 import StatusDisplay from "~/components/common/StatusDisplay.vue";
 import MetadataSettings from "~/components/album/MetadataSettings.vue";
+import HomeGuide from "~/components/common/HomeGuide.vue";
 import type { Album } from '~/types/global';
 
 const { $token } = useNuxtApp()
@@ -71,6 +73,7 @@ const download_as = ref('')
 const { setError } = useGlobalError()
 const selectedItems = ref<Album[]>([])
 const owner_id = ref('')
+const reachGoal = useMetrikaGoal()
 
 // Metadata settings
 const metadataEnabled = ref(false)
@@ -83,10 +86,12 @@ const metadataOptions = ref({
 
 // SEO optimization
 useSeoMeta({
-  title: () => t('title'),
-  ogTitle: () => t('title'),
-  description: () => t('use'),
-  ogDescription: () => t('use'),
+  title: () => t('seo_title'),
+  ogTitle: () => t('seo_title'),
+  twitterTitle: () => t('seo_title'),
+  description: () => t('seo_description'),
+  ogDescription: () => t('seo_description'),
+  twitterDescription: () => t('seo_description'),
   ogImage: 'https://vk4y.ru/og-image.png',
 })
 
@@ -98,9 +103,10 @@ useHead(() => ({
       innerHTML: JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'WebApplication',
-        name: 'Vk4y',
-        url: 'https://vk4y.ru',
-        description: t('use'),
+        name: 'vk4y',
+        alternateName: ['Vk4you', 'vk4y.ru'],
+        url: 'https://vk4y.ru/',
+        description: t('seo_description'),
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Any',
         browserRequirements: 'Requires JavaScript',
@@ -169,6 +175,7 @@ function check() {
     return
   }
 
+  reachGoal('album_check')
   vkPhotoService.getUserAlbums(owner_id.value, album_id)
       .then((result) => {
         if (result.items.length > 0) {
@@ -209,9 +216,11 @@ async function createAndDownloadZips() {
       ? selectedItems.value
       : results.value.items || [];
 
+  reachGoal('download_start')
   const succeeded = await downloadAlbums(owner_id.value, albums, metadataEnabled.value);
 
   if (succeeded) {
+    reachGoal('download_done')
     url.value = '';
     download_as.value = '';
     results.value = {};

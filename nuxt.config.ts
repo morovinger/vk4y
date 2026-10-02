@@ -68,6 +68,10 @@ export default defineNuxtConfig({
     // Browser-language auto-redirect bounced "/" -> "/en" for English clients
     // (incl. Googlebot), which Search Console flagged as "Page with redirect".
     detectBrowserLanguage: false,
+    // GitHub Pages serves prerendered routes as <route>/index.html and 301s
+    // "/about" -> "/about/". Canonical, hreflang and links must use the
+    // trailing-slash form, or Search Console reports "Page with redirect".
+    trailingSlash: true,
   },
 
   css: [
@@ -106,6 +110,7 @@ export default defineNuxtConfig({
     name: 'vk4y',
     description: 'Скачайте ваши альбомы с Vk.com бесплатно без сервера. Приватный и безопасный сервис.',
     defaultLocale: 'ru',
+    trailingSlash: true,
   },
 
   sitemap: {

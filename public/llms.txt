@@ -7,7 +7,7 @@ Key facts:
 - Free, no paid plans, no subscriptions, no hidden fees. Open source: https://github.com/morovinger/vk4y
 - Fully client-side (static site on GitHub Pages). Photos and the VK access token never leave the user's browser.
 - Login happens through the official VK OAuth window on vk.com; the site never sees the user's password. The access token is stored in a browser cookie and can be revoked at any time.
-- Downloads private albums (owner only), wall photos, and profile photos. The "Saved photos" album cannot be downloaded because VK does not grant third-party apps access to it; the workaround is to move those photos into a regular album first (e.g. via vk.com/movephotos).
+- Downloads private albums (owner only), wall photos, profile photos, and open albums of communities and other users. The "Saved photos" album cannot be downloaded because VK does not grant third-party apps access to it; the workaround is to move those photos into a regular album first (e.g. via vk.com/movephotos).
 - No hard size limits: large albums are automatically split into multiple ZIP archives of up to 1500 photos each. The highest-resolution version of every photo is selected.
 - Optional metadata export: likes, comments, tags, and dates for each photo.
 - How to use: log in with VK, paste a link to an albums page or a single album from vk.com, press Check, select albums, press Download.
@@ -15,9 +15,9 @@ Key facts:
 ## Pages
 
 - [Main page (Russian)](https://vk4y.ru/): paste an album URL, select albums, download ZIP
-- [Main page (English)](https://vk4y.ru/en)
-- [About & FAQ (Russian)](https://vk4y.ru/about): safety, VK login, saved photos, size limits, troubleshooting
-- [About & FAQ (English)](https://vk4y.ru/en/about)
+- [Main page (English)](https://vk4y.ru/en/)
+- [About & FAQ (Russian)](https://vk4y.ru/about/): safety, VK login, saved photos, size limits, troubleshooting
+- [About & FAQ (English)](https://vk4y.ru/en/about/)
 
 ## Source
 

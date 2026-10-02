@@ -9,6 +9,7 @@ const permissions = 4 | 2
 const { setError } = useGlobalError()
 const { public: { vkAppId } } = useRuntimeConfig()
 const { $token } = useNuxtApp()
+const reachGoal = useMetrikaGoal()
 
 const login = () => {
   if (!window.VK) {
@@ -18,6 +19,7 @@ const login = () => {
 
   VK.Auth.login((response) => {
     if (response.session) {
+      reachGoal('vk_login');
       console.log('User successfully logged in', response);
       location.reload();
     } else {

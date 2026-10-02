@@ -5,10 +5,12 @@
 
   // SEO optimization for About page
   useSeoMeta({
-    title: () => t('about'),
-    ogTitle: () => t('about'),
-    description: () => t('about_no_server'),
-    ogDescription: () => t('about_no_server'),
+    title: () => t('about_seo_title'),
+    ogTitle: () => t('about_seo_title'),
+    twitterTitle: () => t('about_seo_title'),
+    description: () => t('about_seo_description'),
+    ogDescription: () => t('about_seo_description'),
+    twitterDescription: () => t('about_seo_description'),
     ogImage: 'https://vk4y.ru/og-image.png',
   })
 

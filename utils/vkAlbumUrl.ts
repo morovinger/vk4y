@@ -5,6 +5,14 @@ export type VkAlbumUrlTarget =
     | { mode: 'albums'; ownerId: string }
     | { mode: 'photos'; ownerId: string; albumId: number | 'saved' }
 
+/** VK serves the same pages on vk.com and vk.ru (plus subdomains like m.) */
+const VK_HOST_RE = /^(?:https?:\/\/)?(?:[\w-]+\.)*vk\.(?:com|ru)(?:[/?#]|$)/i
+
+/** Whether the URL points to a VK domain (vk.com or vk.ru) */
+export function isVkUrl(url: string): boolean {
+    return VK_HOST_RE.test(url.trim())
+}
+
 /**
  * Parse a VK photo album URL into an owner/album target.
  *

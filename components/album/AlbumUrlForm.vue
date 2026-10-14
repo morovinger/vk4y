@@ -34,6 +34,8 @@
 </template>
 
 <script lang="ts" setup>
+import { isVkUrl } from '~/utils/vkAlbumUrl';
+
 defineProps({
   modelValue: {
     type: String,
@@ -52,7 +54,7 @@ const { t } = useI18n();
 const urlRules = [
   v => !!v || t('url_not_url'),
   v => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
-  v => v.includes('vk.com') || t('url_not_vk'),
+  v => isVkUrl(v) || t('url_not_vk'),
   v => v.includes('album') || t('url_not_album'),
   v => v.includes('https://') || t('url_not_https'),
 ];

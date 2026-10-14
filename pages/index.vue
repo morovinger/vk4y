@@ -54,7 +54,7 @@
 
 <script lang="ts" setup>
 import { VkPhotoService } from '~/services/vkPhotoService';
-import { parseVkAlbumUrl } from '~/utils/vkAlbumUrl';
+import { isVkUrl, parseVkAlbumUrl } from '~/utils/vkAlbumUrl';
 import DownloadActions from "~/components/album/DownloadActions.vue";
 import StatusDisplay from "~/components/common/StatusDisplay.vue";
 import MetadataSettings from "~/components/album/MetadataSettings.vue";
@@ -134,7 +134,7 @@ useHead(() => ({
 const urlRules = [
   (v: string) => !!v || t('url_not_url'),
   (v: string) => /^((?:https?:\/\/)?[^./]+(?:\.[^./]+)+(?:\/.*)?)$/.test(v) || t('url_not_valid'),
-  (v: string) => v.includes('vk.com') || t('url_not_vk'),
+  (v: string) => isVkUrl(v) || t('url_not_vk'),
   (v: string) => v.includes('album') || t('url_not_album'),
   (v: string) => v.includes('https://') || t('url_not_https'),
 ];

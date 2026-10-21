@@ -40,7 +40,10 @@ const logout = () => {
 
 onMounted(() => {
   const script = document.createElement('script');
-  script.src = 'https://vk.com/js/api/openapi.js';
+  // openapi derives its login/oauth/api hosts from this script's domain. VK ID
+  // sessions (e.g. passwordless accounts) are only visible on login.vk.ru, so
+  // loading from vk.com makes getLoginStatus report "not logged in".
+  script.src = 'https://vk.ru/js/api/openapi.js';
   script.onload = () => {
     console.log('VK openapi is loaded');
     VK.init({ apiId: vkAppId });

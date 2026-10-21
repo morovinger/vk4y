@@ -77,7 +77,7 @@ NUXT_PUBLIC_YANDEX_METRIKA_ID=your_metrika_counter_id
 
 ## VK API Integration
 
-- Uses VK Open API SDK loaded from `https://vk.com/js/api/openapi.js`
+- Uses VK Open API SDK loaded from `https://vk.ru/js/api/openapi.js` (must be vk.ru, not vk.com: the SDK derives login/api hosts from its own domain, and VK ID / passwordless sessions are only visible on `login.vk.ru`)
 - API Version: 5.199
 - Auth token stored in cookie: `vk_app_{appId}`
 - Key methods in `vkPhotoService.ts`:
